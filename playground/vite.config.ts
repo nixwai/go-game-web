@@ -7,5 +7,18 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [vue(), Unocss()],
   base: './',
+  resolve: { alias: { '@': resolve(import.meta.dirname, 'src') } },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
   build: { emptyOutDir: true, outDir: resolve(import.meta.dirname, '../dist/play') },
 });

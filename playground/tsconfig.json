@@ -4,10 +4,20 @@
     "jsx": "preserve",
     "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "useDefineForClassFields": true,
+
+    /* Path alias */
+    "baseUrl": ".",
     "module": "ESNext",
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
+
+    /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
@@ -15,7 +25,8 @@
     "noEmit": true,
     "isolatedModules": true,
     "skipLibCheck": true,
+
     "ignoreDeprecations": "6.0"
   },
-  "references": [{ "path": "./playground" }]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "src/**/*.tsx"]
 }
