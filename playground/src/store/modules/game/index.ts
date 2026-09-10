@@ -64,6 +64,10 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
   function onMove(boardRef: { value?: GoBoardInstance | null }, snap: GoGameSnapshot) {
     snapshot.value = snap;
 
+    if (snap.latestVertex) {
+      passCount.value = 0;
+    }
+
     if (!aiEnabled.value || gameStatus.value !== 'playing') {
       return;
     }
@@ -117,7 +121,12 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
       return;
     }
 
-    boardRef.value?.play();
+    const success = boardRef.value?.play() ?? false;
+
+    if (!success) {
+      return;
+    }
+
     passCount.value++;
 
     if (passCount.value >= 2) {

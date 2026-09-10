@@ -36,3 +36,4 @@ cache
 # ai
 .agents
 skills-lock.json
+coverage

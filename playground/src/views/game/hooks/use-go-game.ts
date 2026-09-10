@@ -1,14 +1,13 @@
-import type { GoGameSnapshot } from '@go-board/design';
+import type { GoBoardInstance, GoGameSnapshot } from '@go-board/design';
+import type { Ref } from 'vue';
 import type { BoardSize } from '@/constants/app';
 import { onMounted, watch } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 import { useGameStore } from '@/store/modules/game';
-import { useGoBoardRef } from './use-go-board';
 
-export function useGoGame() {
+export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
   const gameStore = useGameStore();
   const aiStore = useAIStore();
-  const { boardRef, play, reset } = useGoBoardRef();
 
   onMounted(async () => {
     await gameStore.fetchSetting();
@@ -54,11 +53,8 @@ export function useGoGame() {
   );
 
   return {
-    boardRef,
     gameStore,
     aiStore,
-    play,
-    reset,
     onMove,
     onUpdate,
     handlePass,

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core';
 import { computed } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 import { useGameStore } from '@/store/modules/game';
@@ -8,7 +7,7 @@ const emit = defineEmits<Emits>();
 const gameStore = useGameStore();
 const aiStore = useAIStore();
 
-const selectedModelId = useStorage('go_game_selected_model_id', 0);
+const selectedModelId = computed(() => gameStore.setting?.active_model_id ?? 0);
 
 const modelOptions = computed(() => {
   if (aiStore.activeModels.length === 0) {
@@ -33,7 +32,6 @@ function onModelChange(event: Event) {
   const target = event.target as HTMLSelectElement;
   const modelId = Number(target.value);
 
-  selectedModelId.value = modelId;
   emit('modelChange', modelId);
 }
 </script>

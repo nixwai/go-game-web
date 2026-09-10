@@ -1,10 +1,8 @@
 import type { GoBoardInstance } from '@go-board/design';
-import { ref } from 'vue';
+import type { Ref } from 'vue';
 
 /** 封装 GoBoard 组件实例引用与操作。 */
-export function useGoBoardRef() {
-  const boardRef = ref<GoBoardInstance | null>(null);
-
+export function useGoBoardRef(boardRef: Ref<GoBoardInstance | null>) {
   function play(position?: Parameters<GoBoardInstance['play']>[0]): boolean {
     return boardRef.value?.play(position) ?? false;
   }
@@ -14,7 +12,6 @@ export function useGoBoardRef() {
   }
 
   return {
-    boardRef,
     play,
     reset,
   };
