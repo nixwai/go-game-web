@@ -30,23 +30,23 @@ export function useProviderSubmit(getTableData: () => Promise<void>) {
     dialogVisible.value = true;
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(data: ProviderFormModel) {
     loading.value = true;
     try {
       let success = false;
       if (formMode.value === 'create') {
         success = await aiStore.createProvider({
-          provider_name: formModel.value.provider_name,
-          base_url: formModel.value.base_url,
-          apiKey: formModel.value.apiKey,
+          provider_name: data.provider_name,
+          base_url: data.base_url,
+          apiKey: data.apiKey,
         });
       }
       else {
         success = await aiStore.updateProvider({
-          id: formModel.value.id!,
-          provider_name: formModel.value.provider_name,
-          base_url: formModel.value.base_url,
-          apiKey: formModel.value.apiKey || undefined,
+          id: data.id!,
+          provider_name: data.provider_name,
+          base_url: data.base_url,
+          apiKey: data.apiKey,
         });
       }
       if (success) {

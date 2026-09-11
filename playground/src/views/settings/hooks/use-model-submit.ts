@@ -28,15 +28,15 @@ export function useModelSubmit(getTableData: () => Promise<void>) {
     dialogVisible.value = true;
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(data: ModelFormModel) {
     loading.value = true;
     try {
       let success = false;
       if (formMode.value === 'create') {
-        success = await aiStore.createModel(formModel.value.provider_id, formModel.value.model_name);
+        success = await aiStore.createModel(data.provider_id, data.model_name);
       }
       else {
-        success = await aiStore.updateModel(formModel.value.id!, { model_name: formModel.value.model_name });
+        success = await aiStore.updateModel(data.id!, { model_name: data.model_name });
       }
       if (success) {
         dialogVisible.value = false;

@@ -11,7 +11,7 @@ interface FlatRequestResultData<T> {
 
 const instance = axios.create({
   baseURL: '/',
-  timeout: 15000,
+  timeout: 150000,
 });
 
 export const requestState: RequestInstanceState = { errMsgStack: [] };

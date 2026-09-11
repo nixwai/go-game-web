@@ -8,15 +8,14 @@ const gameStore = useGameStore();
 const aiStore = useAIStore();
 
 const selectedModelId = computed(() => gameStore.setting?.active_model_id ?? 0);
-
 const modelOptions = computed(() => {
   if (aiStore.activeModels.length === 0) {
     return [{ label: '默认模型', value: 0 }];
   }
 
-  return aiStore.activeModels.map(m => ({
-    label: `${m.provider_name} / ${m.model_name}${m.is_default ? ' (默认)' : ''}`,
-    value: m.id,
+  return aiStore.activeModels.map(model => ({
+    label: `${model.provider_name} / ${model.model_name}${model.is_default ? ' · 默认' : ''}`,
+    value: model.id,
   }));
 });
 
@@ -29,37 +28,174 @@ interface Emits {
 }
 
 function onModelChange(event: Event) {
-  const target = event.target as HTMLSelectElement;
-  const modelId = Number(target.value);
-
+  const modelId = Number((event.target as HTMLSelectElement).value);
   emit('modelChange', modelId);
 }
 </script>
 
 <template>
-  <div class="model-selector flex flex-col gap-8px">
-    <div class="flex items-center justify-between">
-      <span class="text-14px font-500">AI 对手</span>
+  <div class="model-selector">
+    <div class="ai-row">
+      <div class="ai-identity">
+        <span class="ai-avatar" aria-hidden="true">✦</span>
+        <div>
+          <strong>智能对手</strong>
+          <small>{{ gameStore.aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
+        </div>
+      </div>
       <button
-        class="rounded-4px px-8px py-4px text-12px transition-colors"
-        :class="gameStore.aiEnabled ? 'bg-green-5 text-white' : 'bg-gray-3 text-gray-6'"
+        class="ai-toggle"
+        :class="{ enabled: gameStore.aiEnabled }"
+        type="button"
+        :aria-pressed="gameStore.aiEnabled"
         @click="toggleAI"
       >
-        {{ gameStore.aiEnabled ? '已开启' : '已关闭' }}
+        <span />{{ gameStore.aiEnabled ? '开启' : '关闭' }}
       </button>
     </div>
-    <select
-      v-if="gameStore.aiEnabled"
-      class="border border-gray-3 rounded-4px px-8px py-6px text-14px outline-none focus:border-blue-5"
-      :value="selectedModelId"
-      @change="onModelChange"
-    >
-      <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
-        {{ opt.label }}
-      </option>
-    </select>
-    <p v-if="gameStore.isAIThinking" class="text-12px text-blue-5">
-      AI 思考中...
+    <label v-if="gameStore.aiEnabled" class="model-field">
+      <span>使用模型</span>
+      <select :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
+        <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
+    </label>
+    <p v-if="gameStore.isAIThinking" class="thinking-label">
+      <span class="thinking-spinner" />AI 正在分析局面...
     </p>
   </div>
 </template>
+
+<style scoped>
+.model-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-identity {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.ai-avatar {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  font-size: 14px;
+  color: var(--sage);
+  background: var(--sage-soft);
+  border-radius: 9px;
+}
+
+.ai-identity > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-identity strong {
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.ai-identity small {
+  font-size: 10px;
+  color: var(--soft-muted);
+}
+
+.ai-toggle {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  min-height: 29px;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--soft-muted);
+  cursor: pointer;
+  background: var(--paper);
+  border: 1px solid rgb(65 104 78 / 16%);
+  border-radius: 8px;
+}
+
+.ai-toggle span {
+  width: 6px;
+  height: 6px;
+  background: #b5b9ae;
+  border-radius: 50%;
+}
+
+.ai-toggle.enabled {
+  color: var(--sage-dark);
+  background: var(--sage-soft);
+  border-color: transparent;
+}
+
+.ai-toggle.enabled span {
+  background: #589066;
+}
+
+.model-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--soft-muted);
+}
+
+.model-field select {
+  width: 100%;
+  min-height: 35px;
+  padding: 0 9px;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--ink);
+  outline: none;
+  background: var(--paper);
+  border: 1px solid rgb(65 104 78 / 18%);
+  border-radius: 9px;
+}
+
+.model-field select:focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgb(65 104 78 / 10%);
+}
+
+.thinking-label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9a742c;
+}
+
+.thinking-spinner {
+  width: 9px;
+  height: 9px;
+  border: 2px solid rgb(196 148 55 / 25%);
+  border-top-color: #c49437;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

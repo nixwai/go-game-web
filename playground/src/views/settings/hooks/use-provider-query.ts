@@ -1,8 +1,10 @@
+import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
 export function useProviderQuery() {
   const aiStore = useAIStore();
+  const { providers } = storeToRefs(aiStore);
   const loading = ref(false);
 
   async function getTableData() {
@@ -21,7 +23,7 @@ export function useProviderQuery() {
 
   return {
     loading,
-    providers: aiStore.providers,
+    providers,
     getTableData,
   };
 }

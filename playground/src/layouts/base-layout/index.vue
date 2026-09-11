@@ -12,36 +12,221 @@ async function handleLogout() {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
-    <header class="flex items-center justify-between border-b border-gray-2 px-24px py-12px">
-      <div class="flex items-center gap-12px">
-        <span class="text-20px font-700 text-gray-8">AI围棋对弈</span>
-      </div>
-      <nav class="flex items-center gap-16px">
-        <button
-          class="rounded-4px px-12px py-6px text-14px text-gray-6 transition-colors hover:bg-gray-1 hover:text-gray-8"
-          @click="toGame"
-        >
+  <div class="app-frame">
+    <header class="app-header">
+      <button class="brand" type="button" aria-label="返回对弈" @click="toGame">
+        <span class="brand-mark" aria-hidden="true"><i /><i /><i /></span>
+        <span class="brand-copy">
+          <strong>AI 围棋</strong>
+          <small>PLAY WITH PURPOSE</small>
+        </span>
+      </button>
+      <nav v-if="authStore.isLogin" class="app-nav" aria-label="主导航">
+        <button class="nav-link" :class="{ active: $route.name === 'game' }" type="button" @click="toGame">
           对弈
         </button>
-        <button
-          class="rounded-4px px-12px py-6px text-14px text-gray-6 transition-colors hover:bg-gray-1 hover:text-gray-8"
-          @click="toSettings"
-        >
-          AI管理
+        <button class="nav-link" :class="{ active: $route.name === 'settings' }" type="button" @click="toSettings">
+          AI 管理
         </button>
-        <span v-if="authStore.isLogin" class="text-14px text-gray-5">{{ authStore.userInfo.username }}</span>
-        <button
-          v-if="authStore.isLogin"
-          class="rounded-4px px-12px py-6px text-14px text-red-5 transition-colors hover:bg-red-1"
-          @click="handleLogout"
-        >
+        <span class="user-chip">
+          <span class="user-avatar">{{ authStore.userInfo.username.slice(0, 1).toUpperCase() }}</span>
+          {{ authStore.userInfo.username }}
+        </span>
+        <button class="logout-button" type="button" @click="handleLogout">
           退出
         </button>
       </nav>
     </header>
-    <main class="flex-1 overflow-auto">
+    <main class="app-main">
       <RouterView />
     </main>
   </div>
 </template>
+
+<style>
+:root {
+  --ink: #24261f;
+  --muted: #74796c;
+  --soft-muted: #9ca195;
+  --paper: #fffdf8;
+  --paper-deep: #f5f1e8;
+  --canvas: #eef2e8;
+  --sage: #41684e;
+  --sage-dark: #31543e;
+  --sage-soft: #dfe9dc;
+  --ochre: #dcb35c;
+  --ochre-dark: #a77b2f;
+  --danger: #a9584d;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    sans-serif;
+  font-synthesis: none;
+  color: var(--ink);
+  text-rendering: optimizelegibility;
+}
+
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+:where(body) {
+  margin: 0;
+  background: var(--canvas);
+}
+
+:where(button, input, select) {
+  font: inherit;
+}
+
+.app-frame {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 8%, rgb(221 235 215 / 95%), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgb(245 235 214 / 90%), transparent 34%),
+    linear-gradient(135deg, #eef3e9 0%, #f7f2e8 100%);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  margin: 0 auto;
+}
+
+.brand {
+  display: inline-flex;
+  gap: 11px;
+  align-items: center;
+  padding: 0;
+  margin-left: 20px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.brand-mark {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 6px);
+  gap: 3px;
+  place-content: center center;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  background: var(--sage);
+  border-radius: 11px;
+  transform: rotate(-8deg);
+}
+
+.brand-mark i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #f9f4e8;
+  border-radius: 50%;
+}
+
+.brand-mark i:last-child {
+  grid-column: 1 / span 2;
+  justify-self: center;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-copy strong {
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.brand-copy small {
+  font-size: 9px;
+  font-weight: 750;
+  color: var(--sage);
+  letter-spacing: 0.16em;
+}
+
+.app-nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.nav-link,
+.logout-button {
+  padding: 9px 13px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--sage-dark);
+  background: rgb(255 253 248 / 72%);
+}
+
+.logout-button {
+  color: var(--danger);
+}
+
+.nav-link:active,
+.logout-button:active {
+  transform: translateY(1px);
+}
+
+.user-chip {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding-left: 14px;
+  margin-left: 12px;
+  font-size: 13px;
+  color: var(--muted);
+  border-left: 1px solid rgb(65 104 78 / 18%);
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+  font-weight: 750;
+  color: #fffdf8;
+  background: var(--sage);
+  border-radius: 50%;
+}
+
+.logout-button:hover {
+  background: rgb(169 88 77 / 10%);
+}
+
+.app-main {
+  min-height: calc(100vh - 76px);
+}
+</style>
