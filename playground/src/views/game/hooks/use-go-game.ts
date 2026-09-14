@@ -20,6 +20,7 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
   }
 
   function onUpdate(snapshot: GoGameSnapshot) {
+    gameStore.clearAIError();
     gameStore.snapshot = snapshot;
   }
 
@@ -43,6 +44,10 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
     void gameStore.switchModel(modelId);
   }
 
+  function handleRetryAI() {
+    void gameStore.retryAI(boardRef);
+  }
+
   watch(
     () => gameStore.aiEnabled,
     (enabled) => {
@@ -62,5 +67,6 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
     handleNewGame,
     handleBoardSizeChange,
     handleModelChange,
+    handleRetryAI,
   };
 }

@@ -1,7 +1,7 @@
 declare namespace Api {
   namespace AiGo {
     interface KoInfo {
-      sign: number
+      sign: -1 | 1
       vertex: [number, number]
     }
 

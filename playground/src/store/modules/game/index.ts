@@ -1,4 +1,5 @@
-import type { GoBoardInstance, GoGameSnapshot, KoInfo } from '@go-board/design';
+import type { GoBoardInstance, GoGameSnapshot } from '@go-board/design';
+import type { Ref } from 'vue';
 import type { BoardSize } from '@/constants/app';
 import { defineStore } from 'pinia';
 import { computed, ref, shallowRef } from 'vue';
@@ -6,15 +7,50 @@ import { BOARD_SIZES } from '@/constants/app';
 import { SetupStoreId } from '@/enum';
 import { fetchAnalyzeGoGame, fetchGoGameSetting, fetchUpdateGoGameSetting } from '@/service/api';
 
+const AI_INVALID_MOVE_ERROR = 'AI 返回的下棋位置无效，请重试';
+const AI_INVALID_RESPONSE_ERROR = 'AI 返回了无效的响应，请重试';
+const AI_REQUEST_ERROR = 'AI 请求失败，请重试';
+type BoardRef = Ref<GoBoardInstance | null> | { value?: GoBoardInstance | null };
+
+function createAnalyzeKo(ko: GoGameSnapshot['ko']): Api.AiGo.KoInfo | undefined {
+  if (!ko || (ko.sign !== 1 && ko.sign !== -1)) {
+    return undefined;
+  }
+
+  const [x, y] = ko.vertex;
+  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0) {
+    return undefined;
+  }
+
+  return {
+    sign: ko.sign,
+    vertex: [x, y],
+  };
+}
+
+function getAIErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  if (typeof error === 'string' && error.trim()) {
+    return error.trim();
+  }
+
+  return AI_REQUEST_ERROR;
+}
+
 export const useGameStore = defineStore(SetupStoreId.Game, () => {
   const boardSize = ref<BoardSize>(9);
   const showCoord = ref(false);
   const aiEnabled = ref(true);
   const isAIThinking = ref(false);
+  const aiError = ref('');
   const gameStatus = ref<'playing' | 'ended'>('playing');
   const passCount = ref(0);
   const snapshot = shallowRef<GoGameSnapshot | null>(null);
   const setting = ref<Api.AiGo.GameSettingResponse | null>(null);
+  let aiRequestId = 0;
 
   const currentPlayer = computed(() => snapshot.value?.player ?? 1);
 
@@ -55,14 +91,21 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
     await updateSetting({ active_model_id: modelId });
   }
 
+  function clearAIError() {
+    aiError.value = '';
+  }
+
   function initGame() {
+    aiRequestId++;
     gameStatus.value = 'playing';
     passCount.value = 0;
     isAIThinking.value = false;
+    clearAIError();
   }
 
-  function onMove(boardRef: { value?: GoBoardInstance | null }, snap: GoGameSnapshot) {
+  function onMove(boardRef: BoardRef, snap: GoGameSnapshot) {
     snapshot.value = snap;
+    clearAIError();
 
     if (snap.latestVertex) {
       passCount.value = 0;
@@ -77,20 +120,18 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
     }
   }
 
-  async function triggerAI(
-    boardRef: { value?: GoBoardInstance | null },
-    snap: GoGameSnapshot,
-  ) {
+  async function triggerAI(boardRef: BoardRef, snap: GoGameSnapshot): Promise<boolean> {
     if (isAIThinking.value) {
-      return;
+      return false;
     }
 
     isAIThinking.value = true;
+    snapshot.value = snap;
+    clearAIError();
+    const requestId = ++aiRequestId;
 
     try {
-      const ko: KoInfo | undefined = snap.ko
-        ? { sign: snap.ko.sign as -1 | 1, vertex: snap.ko.vertex }
-        : undefined;
+      const ko = createAnalyzeKo(snap.ko);
 
       const { data, error } = await fetchAnalyzeGoGame({
         size: snap.size,
@@ -100,23 +141,69 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
         latestVertex: snap.latestVertex,
       });
 
-      if (error || !data) {
-        return;
+      if (requestId !== aiRequestId) {
+        return false;
       }
 
-      if (data.action === 'move' && data.vertex) {
-        boardRef.value?.play(data.vertex);
+      if (error || !data) {
+        aiError.value = getAIErrorMessage(error);
+        return false;
       }
-      else if (data.action === 'end_game') {
+
+      if (data.action === 'move') {
+        if (!data.vertex) {
+          aiError.value = AI_INVALID_MOVE_ERROR;
+          return false;
+        }
+
+        let success = false;
+        try {
+          success = boardRef.value?.play(data.vertex) ?? false;
+        }
+        catch {
+          success = false;
+        }
+
+        if (!success) {
+          aiError.value = AI_INVALID_MOVE_ERROR;
+          return false;
+        }
+
+        return true;
+      }
+
+      if (data.action === 'end_game') {
         gameStatus.value = 'ended';
+        return true;
       }
+
+      aiError.value = AI_INVALID_RESPONSE_ERROR;
+      return false;
+    }
+    catch (error) {
+      if (requestId === aiRequestId) {
+        aiError.value = getAIErrorMessage(error);
+      }
+      return false;
     }
     finally {
-      isAIThinking.value = false;
+      if (requestId === aiRequestId) {
+        isAIThinking.value = false;
+      }
     }
   }
 
-  function pass(boardRef: { value?: GoBoardInstance | null }) {
+  async function retryAI(boardRef: BoardRef): Promise<boolean> {
+    const failedSnapshot = snapshot.value;
+
+    if (!aiError.value || !failedSnapshot || failedSnapshot.player !== -1 || gameStatus.value !== 'playing') {
+      return false;
+    }
+
+    return triggerAI(boardRef, failedSnapshot);
+  }
+
+  function pass(boardRef: BoardRef) {
     if (gameStatus.value !== 'playing') {
       return;
     }
@@ -138,15 +225,17 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
     gameStatus.value = 'ended';
   }
 
-  function newGame(boardRef: { value?: GoBoardInstance | null }) {
+  function newGame(boardRef: BoardRef) {
+    aiRequestId++;
     boardRef.value?.reset({ size: boardSize.value });
     gameStatus.value = 'playing';
     passCount.value = 0;
     isAIThinking.value = false;
+    clearAIError();
     snapshot.value = null;
   }
 
-  function setBoardSize(size: BoardSize, boardRef: { value?: GoBoardInstance | null }) {
+  function setBoardSize(size: BoardSize, boardRef: BoardRef) {
     if (!BOARD_SIZES.includes(size)) {
       return;
     }
@@ -160,6 +249,7 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
     showCoord,
     aiEnabled,
     isAIThinking,
+    aiError,
     gameStatus,
     passCount,
     snapshot,
@@ -169,9 +259,11 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
     fetchSetting,
     updateSetting,
     switchModel,
+    clearAIError,
     initGame,
     onMove,
     triggerAI,
+    retryAI,
     pass,
     resign,
     newGame,

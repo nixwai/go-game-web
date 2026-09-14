@@ -18,6 +18,7 @@ const {
   handleNewGame,
   handleBoardSizeChange,
   handleModelChange,
+  handleRetryAI,
 } = useGoGame(boardRef);
 
 const statusLabel = computed(() => gameStore.gameStatus === 'ended' ? '对局已结束' : '对弈进行中');
@@ -83,6 +84,7 @@ function handleToggleCoord() {
           @board-size-change="handleBoardSizeChange"
           @toggle-coord="handleToggleCoord"
           @model-change="handleModelChange"
+          @retry="handleRetryAI"
         />
       </div>
     </section>

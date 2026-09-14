@@ -10,6 +10,7 @@ interface Emits {
   (e: 'newGame'): void
   (e: 'boardSizeChange', size: BoardSize): void
   (e: 'toggleCoord'): void
+  (e: 'retry'): void
   (e: 'modelChange', modelId: number): void
 }
 
@@ -33,7 +34,7 @@ const emit = defineEmits<Emits>();
         <span>当前对局</span>
         <span class="section-line" />
       </div>
-      <GameStatus />
+      <GameStatus @retry="emit('retry')" />
     </section>
 
     <section class="control-section">
