@@ -10,6 +10,7 @@ import { fetchAnalyzeGoGame, fetchGoGameSetting, fetchUpdateGoGameSetting } from
 const AI_INVALID_MOVE_ERROR = 'AI 返回的下棋位置无效，请重试';
 const AI_INVALID_RESPONSE_ERROR = 'AI 返回了无效的响应，请重试';
 const AI_REQUEST_ERROR = 'AI 请求失败，请重试';
+const AI_MAX_RETRIES = 10;
 type BoardRef = Ref<GoBoardInstance | null> | { value?: GoBoardInstance | null };
 
 function createAnalyzeKo(ko: GoGameSnapshot['ko']): Api.AiGo.KoInfo | undefined {
@@ -132,58 +133,73 @@ export const useGameStore = defineStore(SetupStoreId.Game, () => {
 
     try {
       const ko = createAnalyzeKo(snap.ko);
+      let lastError = AI_REQUEST_ERROR;
 
-      const { data, error } = await fetchAnalyzeGoGame({
-        size: snap.size,
-        layout: snap.layout,
-        player: snap.player,
-        ko,
-        latestVertex: snap.latestVertex,
-      });
-
-      if (requestId !== aiRequestId) {
-        return false;
-      }
-
-      if (error || !data) {
-        aiError.value = getAIErrorMessage(error);
-        return false;
-      }
-
-      if (data.action === 'move') {
-        if (!data.vertex) {
-          aiError.value = AI_INVALID_MOVE_ERROR;
+      for (let attempt = 0; attempt <= AI_MAX_RETRIES; attempt++) {
+        if (requestId !== aiRequestId) {
           return false;
         }
 
-        let success = false;
         try {
-          success = boardRef.value?.play(data.vertex) ?? false;
-        }
-        catch {
-          success = false;
-        }
+          const { data, error } = await fetchAnalyzeGoGame({
+            size: snap.size,
+            layout: snap.layout,
+            player: snap.player,
+            ko,
+            latestVertex: snap.latestVertex,
+          });
 
-        if (!success) {
-          aiError.value = AI_INVALID_MOVE_ERROR;
-          return false;
-        }
+          if (requestId !== aiRequestId) {
+            return false;
+          }
 
-        return true;
+          if (error || !data) {
+            lastError = getAIErrorMessage(error);
+            continue;
+          }
+
+          if (data.action === 'move') {
+            if (!data.vertex) {
+              lastError = AI_INVALID_MOVE_ERROR;
+              continue;
+            }
+
+            let success = false;
+            try {
+              success = boardRef.value?.play(data.vertex) ?? false;
+            }
+            catch {
+              success = false;
+            }
+
+            if (!success) {
+              lastError = AI_INVALID_MOVE_ERROR;
+              continue;
+            }
+
+            return true;
+          }
+
+          if (data.action === 'end_game') {
+            gameStatus.value = 'ended';
+            return true;
+          }
+
+          lastError = AI_INVALID_RESPONSE_ERROR;
+        }
+        catch (error) {
+          if (requestId !== aiRequestId) {
+            return false;
+          }
+
+          lastError = getAIErrorMessage(error);
+        }
       }
 
-      if (data.action === 'end_game') {
-        gameStatus.value = 'ended';
-        return true;
-      }
-
-      aiError.value = AI_INVALID_RESPONSE_ERROR;
-      return false;
-    }
-    catch (error) {
       if (requestId === aiRequestId) {
-        aiError.value = getAIErrorMessage(error);
+        aiError.value = lastError;
       }
+
       return false;
     }
     finally {

@@ -31,24 +31,66 @@ describe('game store AI error recovery', () => {
     mockedFetchAnalyzeGoGame.mockReset();
   });
 
-  it('保存 AI 接口错误原因，并通过重试重新发起请求', async () => {
+  it('接口失败后自动重试并在成功时继续落子', async () => {
     mockedFetchAnalyzeGoGame
+      .mockResolvedValueOnce({ data: null, error: new Error('AI 服务暂时不可用') })
       .mockResolvedValueOnce({ data: null, error: new Error('AI 服务暂时不可用') })
       .mockResolvedValueOnce({ data: { action: 'move', vertex: [2, 2] }, error: null });
     const play = vi.fn(() => true);
     const boardRef = createBoardRef(play);
     const store = useGameStore();
-    const snapshot = createSnapshot();
 
-    await store.triggerAI(boardRef, snapshot);
+    await store.triggerAI(boardRef, createSnapshot());
 
-    expect(store.aiError).toBe('AI 服务暂时不可用');
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(3);
+    expect(play).toHaveBeenCalledWith([2, 2]);
+    expect(store.aiError).toBe('');
     expect(store.isAIThinking).toBe(false);
+  });
+
+  it('自动重试失败后显示异常，并支持再次手动重试', async () => {
+    for (let attempt = 0; attempt <= 10; attempt++) {
+      mockedFetchAnalyzeGoGame.mockResolvedValueOnce({
+        data: null,
+        error: new Error('AI 服务暂时不可用'),
+      });
+    }
+    mockedFetchAnalyzeGoGame.mockResolvedValueOnce({
+      data: { action: 'move', vertex: [2, 2] },
+      error: null,
+    });
+    const play = vi.fn(() => true);
+    const boardRef = createBoardRef(play);
+    const store = useGameStore();
+
+    await store.triggerAI(boardRef, createSnapshot());
+
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(11);
+    expect(store.aiError).toBe('AI 服务暂时不可用');
 
     await store.retryAI(boardRef);
 
-    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(2);
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(12);
     expect(play).toHaveBeenCalledWith([2, 2]);
+    expect(store.aiError).toBe('');
+  });
+
+  it('下棋位置无效后自动重试并在合法位置落子', async () => {
+    mockedFetchAnalyzeGoGame.mockResolvedValue({
+      data: { action: 'move', vertex: [2, 2] },
+      error: null,
+    });
+    const play = vi.fn()
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    const boardRef = createBoardRef(play);
+    const store = useGameStore();
+
+    await store.triggerAI(boardRef, createSnapshot());
+
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(3);
+    expect(play).toHaveBeenCalledTimes(3);
     expect(store.aiError).toBe('');
   });
 
