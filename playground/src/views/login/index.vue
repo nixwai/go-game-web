@@ -24,6 +24,7 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
         <p v-if="errorMsg" class="error-message" role="alert">
           {{ errorMsg }}
         </p>
+        <div v-else class="h-48px" />
         <AuthForm mode="login" :loading="loading" @submit="handleSubmit" />
         <p class="auth-switch">
           还没有账号？

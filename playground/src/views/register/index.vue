@@ -28,6 +28,7 @@ function handleToLogin() {
         <p v-if="errorMsg" class="error-message" role="alert">
           {{ errorMsg }}
         </p>
+        <div v-else class="h-48px" />
         <AuthForm mode="register" :loading="loading" @submit="handleSubmit" />
         <p class="auth-switch">
           已有账号？

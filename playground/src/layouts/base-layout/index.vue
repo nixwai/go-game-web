@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RequestErrorToast from '@/components/common/request-error-toast.vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useAuthStore } from '@/store/modules/auth';
 
@@ -40,6 +41,7 @@ async function handleLogout() {
     <main class="app-main">
       <RouterView />
     </main>
+    <RequestErrorToast />
   </div>
 </template>
 
