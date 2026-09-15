@@ -1,31 +1,30 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 import ModelList from './components/model-list.vue';
 import ProviderCard from './components/provider-card.vue';
 import ProviderDialog from './components/provider-dialog.vue';
 import { useProviderDelete } from './hooks/use-provider-delete';
 import { useProviderQuery } from './hooks/use-provider-query';
-import { useProviderSubmit } from './hooks/use-provider-submit';
 
 defineOptions({ name: 'SettingsView' });
 
 const aiStore = useAIStore();
 const { loading, providers, getTableData } = useProviderQuery();
-const {
-  loading: submitLoading,
-  dialogVisible,
-  formMode,
-  formModel,
-  openCreate,
-  openEdit,
-  handleSubmit,
-} = useProviderSubmit(getTableData);
+const providerDialogRef = ref<InstanceType<typeof ProviderDialog> | null>(null);
 const { deletingId, handleDelete } = useProviderDelete(getTableData);
 
 const activeProviderCount = computed(() => providers.value.filter(provider => provider.status === 'active').length);
 const modelCount = computed(() => providers.value.reduce((total, provider) => total + provider.models.length, 0));
 const defaultModel = computed(() => aiStore.defaultModel?.model_name || '未设置');
+
+function openProviderCreate() {
+  providerDialogRef.value?.open();
+}
+
+function openProviderEdit(provider: Api.Ai.ProviderResponse) {
+  providerDialogRef.value?.open({ mode: 'edit', row: provider });
+}
 </script>
 
 <template>
@@ -35,7 +34,7 @@ const defaultModel = computed(() => aiStore.defaultModel?.model_name || '未设�
         <h1 class="text-2xl font-bold">
           管理你的 AI 对手
         </h1>
-        <button class="primary-button" type="button" @click="openCreate">
+        <button class="primary-button" type="button" @click="openProviderCreate">
           <span aria-hidden="true">＋</span> 新增产商
         </button>
       </div>
@@ -63,7 +62,7 @@ const defaultModel = computed(() => aiStore.defaultModel?.model_name || '未设�
           <ProviderCard
             :provider="provider"
             :deleting="deletingId === provider.id"
-            @edit="openEdit(provider)"
+            @edit="openProviderEdit(provider)"
             @delete="handleDelete(provider.id)"
           />
           <ModelList :provider="provider" :get-table-data="getTableData" />
@@ -75,13 +74,7 @@ const defaultModel = computed(() => aiStore.defaultModel?.model_name || '未设�
         </div>
       </div>
 
-      <ProviderDialog
-        v-model:visible="dialogVisible"
-        :mode="formMode"
-        :model="formModel"
-        :loading="submitLoading"
-        @submit="handleSubmit"
-      />
+      <ProviderDialog ref="providerDialogRef" @success="getTableData" />
     </section>
   </div>
 </template>

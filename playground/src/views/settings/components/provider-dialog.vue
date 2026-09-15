@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import type { ProviderFormModel } from '../typings';
-import { reactive, watch } from 'vue';
-
-interface Props {
-  visible: boolean
-  mode: 'create' | 'edit'
-  model: ProviderFormModel
-  loading?: boolean
-}
+import { useProviderSubmit } from '../hooks/use-provider-submit';
 
 interface Emits {
-  (e: 'update:visible', v: boolean): void
-  (e: 'submit', data: ProviderFormModel): void
+  (e: 'success'): void
 }
 
-const props = defineProps<Props>();
+defineOptions({ name: 'ProviderDialog' });
+
 const emit = defineEmits<Emits>();
-const localModel = reactive<ProviderFormModel>({ ...props.model });
+const {
+  loading,
+  dialogVisible,
+  formMode,
+  formModel,
+  open,
+  close,
+  handleSubmit: submitForm,
+} = useProviderSubmit();
 
-watch(() => props.model, (value) => {
-  Object.assign(localModel, value);
-}, { deep: true });
+async function handleSubmit() {
+  const success = await submitForm();
 
-function close() {
-  emit('update:visible', false);
+  if (success) {
+    close();
+    emit('success');
+  }
 }
 
-function handleSubmit() {
-  emit('submit', { ...localModel });
-}
+defineExpose({ open });
 </script>
 
 <template>
-  <div v-if="props.visible" class="dialog-backdrop" @click.self="close">
+  <div v-if="dialogVisible" class="dialog-backdrop" @click.self="close">
     <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="provider-dialog-title">
       <div class="dialog-header">
         <div>
@@ -40,7 +39,7 @@ function handleSubmit() {
             PROVIDER CONNECTION
           </p>
           <h3 id="provider-dialog-title">
-            {{ props.mode === 'create' ? '新增 AI 产商' : '编辑 AI 产商' }}
+            {{ formMode === 'create' ? '新增 AI 产商' : '编辑 AI 产商' }}
           </h3>
         </div>
         <button class="close-button" type="button" aria-label="关闭" @click="close">
@@ -53,17 +52,17 @@ function handleSubmit() {
       <form class="dialog-form" @submit.prevent="handleSubmit">
         <label class="field">
           <span>产商名称</span>
-          <input v-model="localModel.provider_name" required placeholder="例如 OpenAI" autocomplete="organization">
+          <input v-model="formModel.provider_name" required placeholder="例如 OpenAI" autocomplete="organization">
         </label>
         <label class="field">
           <span>Base URL</span>
-          <input v-model="localModel.base_url" required placeholder="https://api.openai.com/v1" inputmode="url">
+          <input v-model="formModel.base_url" required placeholder="https://api.openai.com/v1" inputmode="url">
         </label>
         <label class="field">
-          <span>API Key <small v-if="props.mode === 'edit'">（留空保留原密钥）</small></span>
+          <span>API Key <small v-if="formMode === 'edit'">（留空保留原密钥）</small></span>
           <input
-            v-model="localModel.apiKey"
-            :required="props.mode === 'create'"
+            v-model="formModel.apiKey"
+            :required="formMode === 'create'"
             type="password"
             placeholder="sk-..."
             autocomplete="new-password"
@@ -73,8 +72,8 @@ function handleSubmit() {
           <button class="cancel-button" type="button" @click="close">
             取消
           </button>
-          <button class="confirm-button" type="submit" :disabled="props.loading">
-            {{ props.loading ? '保存中...' : '保存配置' }}
+          <button class="confirm-button" type="submit" :disabled="loading">
+            {{ loading ? '保存中...' : '保存配置' }}
           </button>
         </div>
       </form>

@@ -1,58 +1,63 @@
-import type { ProviderFormModel } from '../typings';
+import type { ProviderDialogOpenOptions, ProviderFormModel } from '../typings';
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
-export function useProviderSubmit(getTableData: () => Promise<void>) {
+export function useProviderSubmit() {
   const aiStore = useAIStore();
   const loading = ref(false);
   const dialogVisible = ref(false);
   const formMode = ref<'create' | 'edit'>('create');
-  const formModel = ref<ProviderFormModel>({
-    provider_name: '',
-    base_url: '',
-    apiKey: '',
-  });
+  const formModel = ref<ProviderFormModel>(createDefaultFormModel());
 
-  function openCreate() {
+  function createDefaultFormModel(): ProviderFormModel {
+    return { provider_name: '', base_url: '', apiKey: '' };
+  }
+
+  function resetForm() {
     formMode.value = 'create';
-    formModel.value = { provider_name: '', base_url: '', apiKey: '' };
+    formModel.value = createDefaultFormModel();
+  }
+
+  function open(options: ProviderDialogOpenOptions = {}) {
+    resetForm();
+
+    if (options.mode === 'edit') {
+      formMode.value = 'edit';
+      formModel.value = {
+        id: options.row.id,
+        provider_name: options.row.provider_name,
+        base_url: options.row.base_url,
+        apiKey: '',
+      };
+    }
+
     dialogVisible.value = true;
   }
 
-  function openEdit(row: Api.Ai.ProviderResponse) {
-    formMode.value = 'edit';
-    formModel.value = {
-      id: row.id,
-      provider_name: row.provider_name,
-      base_url: row.base_url,
-      apiKey: '',
-    };
-    dialogVisible.value = true;
+  function close() {
+    dialogVisible.value = false;
+    resetForm();
   }
 
-  async function handleSubmit(data: ProviderFormModel) {
+  async function handleSubmit() {
+    const data = { ...formModel.value };
     loading.value = true;
+
     try {
-      let success = false;
       if (formMode.value === 'create') {
-        success = await aiStore.createProvider({
+        return await aiStore.createProvider({
           provider_name: data.provider_name,
           base_url: data.base_url,
           apiKey: data.apiKey,
         });
       }
-      else {
-        success = await aiStore.updateProvider({
-          id: data.id!,
-          provider_name: data.provider_name,
-          base_url: data.base_url,
-          apiKey: data.apiKey,
-        });
-      }
-      if (success) {
-        dialogVisible.value = false;
-        await getTableData();
-      }
+
+      return await aiStore.updateProvider({
+        id: data.id!,
+        provider_name: data.provider_name,
+        base_url: data.base_url,
+        apiKey: data.apiKey,
+      });
     }
     finally {
       loading.value = false;
@@ -64,8 +69,8 @@ export function useProviderSubmit(getTableData: () => Promise<void>) {
     dialogVisible,
     formMode,
     formModel,
-    openCreate,
-    openEdit,
+    open,
+    close,
     handleSubmit,
   };
 }

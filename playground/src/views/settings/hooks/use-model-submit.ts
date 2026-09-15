@@ -1,47 +1,54 @@
-import type { ModelFormModel } from '../typings';
+import type { ModelDialogOpenOptions, ModelFormModel } from '../typings';
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
-export function useModelSubmit(getTableData: () => Promise<void>) {
+export function useModelSubmit() {
   const aiStore = useAIStore();
   const loading = ref(false);
   const dialogVisible = ref(false);
-  const formModel = ref<ModelFormModel>({
-    provider_id: 0,
-    model_name: '',
-  });
+  const formModel = ref<ModelFormModel>(createDefaultFormModel(0));
   const formMode = ref<'create' | 'edit'>('create');
 
-  function openCreate(providerId: number) {
+  function createDefaultFormModel(providerId: number): ModelFormModel {
+    return { provider_id: providerId, model_name: '' };
+  }
+
+  function resetForm() {
     formMode.value = 'create';
-    formModel.value = { provider_id: providerId, model_name: '' };
+    formModel.value = createDefaultFormModel(0);
+  }
+
+  function open(options: ModelDialogOpenOptions) {
+    resetForm();
+    formModel.value = { provider_id: options.providerId, model_name: '' };
+
+    if (options.mode === 'edit') {
+      formMode.value = 'edit';
+      formModel.value = {
+        id: options.row.id,
+        provider_id: options.providerId,
+        model_name: options.row.model_name,
+      };
+    }
+
     dialogVisible.value = true;
   }
 
-  function openEdit(providerId: number, model: Api.Ai.ModelResponse) {
-    formMode.value = 'edit';
-    formModel.value = {
-      id: model.id,
-      provider_id: providerId,
-      model_name: model.model_name,
-    };
-    dialogVisible.value = true;
+  function close() {
+    dialogVisible.value = false;
+    resetForm();
   }
 
-  async function handleSubmit(data: ModelFormModel) {
+  async function handleSubmit() {
+    const data = { ...formModel.value };
     loading.value = true;
+
     try {
-      let success = false;
       if (formMode.value === 'create') {
-        success = await aiStore.createModel(data.provider_id, data.model_name);
+        return await aiStore.createModel(data.provider_id, data.model_name);
       }
-      else {
-        success = await aiStore.updateModel(data.id!, { model_name: data.model_name });
-      }
-      if (success) {
-        dialogVisible.value = false;
-        await getTableData();
-      }
+
+      return await aiStore.updateModel(data.id!, { model_name: data.model_name });
     }
     finally {
       loading.value = false;
@@ -53,8 +60,8 @@ export function useModelSubmit(getTableData: () => Promise<void>) {
     dialogVisible,
     formMode,
     formModel,
-    openCreate,
-    openEdit,
+    open,
+    close,
     handleSubmit,
   };
 }

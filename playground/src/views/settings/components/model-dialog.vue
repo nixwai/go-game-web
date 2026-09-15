@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import type { ModelFormModel } from '../typings';
-import { reactive, watch } from 'vue';
-
-interface Props {
-  visible: boolean
-  mode: 'create' | 'edit'
-  model: ModelFormModel
-  loading?: boolean
-}
+import { useModelSubmit } from '../hooks/use-model-submit';
 
 interface Emits {
-  (e: 'update:visible', v: boolean): void
-  (e: 'submit', data: ModelFormModel): void
+  (e: 'success'): void
 }
 
-const props = defineProps<Props>();
+defineOptions({ name: 'ModelDialog' });
+
 const emit = defineEmits<Emits>();
-const localModel = reactive<ModelFormModel>({ ...props.model });
+const {
+  loading,
+  dialogVisible,
+  formMode,
+  formModel,
+  open,
+  close,
+  handleSubmit: submitForm,
+} = useModelSubmit();
 
-watch(() => props.model, (value) => {
-  Object.assign(localModel, value);
-}, { deep: true });
+async function handleSubmit() {
+  const success = await submitForm();
 
-function close() {
-  emit('update:visible', false);
+  if (success) {
+    close();
+    emit('success');
+  }
 }
 
-function handleSubmit() {
-  emit('submit', { ...localModel });
-}
+defineExpose({ open });
 </script>
 
 <template>
-  <div v-if="props.visible" class="dialog-backdrop" @click.self="close">
+  <div v-if="dialogVisible" class="dialog-backdrop" @click.self="close">
     <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="model-dialog-title">
       <div class="dialog-header">
         <div>
@@ -40,7 +39,7 @@ function handleSubmit() {
             MODEL CATALOG
           </p>
           <h3 id="model-dialog-title">
-            {{ props.mode === 'create' ? '新增模型' : '编辑模型' }}
+            {{ formMode === 'create' ? '新增模型' : '编辑模型' }}
           </h3>
         </div>
         <button class="close-button" type="button" aria-label="关闭" @click="close">
@@ -53,14 +52,14 @@ function handleSubmit() {
       <form class="dialog-form" @submit.prevent="handleSubmit">
         <label class="field">
           <span>模型名称</span>
-          <input v-model="localModel.model_name" required placeholder="例如 gpt-4o" autocomplete="off">
+          <input v-model="formModel.model_name" required placeholder="例如 gpt-4o" autocomplete="off">
         </label>
         <div class="dialog-actions">
           <button class="cancel-button" type="button" @click="close">
             取消
           </button>
-          <button class="confirm-button" type="submit" :disabled="props.loading">
-            {{ props.loading ? '保存中...' : '保存模型' }}
+          <button class="confirm-button" type="submit" :disabled="loading">
+            {{ loading ? '保存中...' : '保存模型' }}
           </button>
         </div>
       </form>

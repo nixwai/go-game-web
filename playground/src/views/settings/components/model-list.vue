@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useModelDelete } from '../hooks/use-model-delete';
-import { useModelSubmit } from '../hooks/use-model-submit';
 import ModelDialog from './model-dialog.vue';
 
 interface Props {
@@ -10,23 +10,15 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const {
-  loading: submitLoading,
-  dialogVisible,
-  formMode,
-  formModel,
-  openCreate,
-  openEdit,
-  handleSubmit,
-} = useModelSubmit(props.getTableData);
+const modelDialogRef = ref<InstanceType<typeof ModelDialog> | null>(null);
 const { deletingId, handleDelete } = useModelDelete(props.getTableData);
 
 function handleOpenCreate() {
-  openCreate(props.provider.id);
+  modelDialogRef.value?.open({ mode: 'create', providerId: props.provider.id });
 }
 
 function handleEdit(model: Api.Ai.ModelResponse) {
-  openEdit(props.provider.id, model);
+  modelDialogRef.value?.open({ mode: 'edit', providerId: props.provider.id, row: model });
 }
 </script>
 
@@ -68,13 +60,7 @@ function handleEdit(model: Api.Ai.ModelResponse) {
     <p v-else class="model-empty">
       这个产商还没有添加模型。
     </p>
-    <ModelDialog
-      v-model:visible="dialogVisible"
-      :mode="formMode"
-      :model="formModel"
-      :loading="submitLoading"
-      @submit="handleSubmit"
-    />
+    <ModelDialog ref="modelDialogRef" @success="props.getTableData" />
   </div>
 </template>
 

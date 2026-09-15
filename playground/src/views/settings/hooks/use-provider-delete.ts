@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
-export function useProviderDelete(getTableData: () => Promise<void>) {
+export function useProviderDelete(callback: () => Promise<void>) {
   const aiStore = useAIStore();
   const deletingId = ref<number | null>(null);
 
@@ -13,7 +13,7 @@ export function useProviderDelete(getTableData: () => Promise<void>) {
     try {
       const success = await aiStore.deleteProvider(id);
       if (success) {
-        await getTableData();
+        await callback();
       }
     }
     finally {
