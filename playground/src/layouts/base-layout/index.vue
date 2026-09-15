@@ -41,6 +41,15 @@ async function handleLogout() {
     <main class="app-main">
       <RouterView />
     </main>
+    <footer class="app-footer" aria-label="源码链接">
+      <a href="https://github.com/nixwai/go-game-server" target="_blank" rel="noreferrer">
+        服务端源码
+      </a>
+      <span aria-hidden="true">·</span>
+      <a href="https://github.com/nixwai/go-game-web" target="_blank" rel="noreferrer">
+        前端源码
+      </a>
+    </footer>
     <RequestErrorToast />
   </div>
 </template>
@@ -89,6 +98,8 @@ async function handleLogout() {
 }
 
 .app-frame {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background:
     radial-gradient(circle at 10% 8%, rgb(221 235 215 / 95%), transparent 30%),
@@ -229,6 +240,28 @@ async function handleLogout() {
 }
 
 .app-main {
+  flex: 1;
   min-height: calc(100vh - 76px);
+}
+
+.app-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 20px 22px;
+  font-size: 12px;
+  color: var(--soft-muted);
+}
+
+.app-footer a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.app-footer a:hover {
+  color: var(--sage-dark);
+  text-decoration: underline;
 }
 </style>
