@@ -1,13 +1,3 @@
-<script setup lang="ts">
-import { computed } from 'vue';
-
-const props = defineProps<{
-  gameStatus: 'playing' | 'ended'
-}>();
-
-const statusLabel = computed(() => props.gameStatus === 'ended' ? '对局已结束' : '对弈进行中');
-</script>
-
 <template>
   <div class="board-topline">
     <div class="player-pair">
@@ -15,8 +5,8 @@ const statusLabel = computed(() => props.gameStatus === 'ended' ? '对局已结�
       <span class="versus">VS</span>
       <span class="player-badge"><i class="stone-dot white" />AI · 白方</span>
     </div>
-    <span class="status-pill" :class="{ ended: props.gameStatus === 'ended' }">
-      <i />{{ statusLabel }}
+    <span class="status-pill">
+      <i />对弈进行中
     </span>
   </div>
 </template>
@@ -89,15 +79,5 @@ const statusLabel = computed(() => props.gameStatus === 'ended' ? '对局已结�
   background: #5c9b6c;
   border-radius: 50%;
   box-shadow: 0 0 0 3px rgb(92 155 108 / 14%);
-}
-
-.status-pill.ended {
-  color: var(--danger);
-  background: #f4e4df;
-}
-
-.status-pill.ended i {
-  background: var(--danger);
-  box-shadow: 0 0 0 3px rgb(169 88 77 / 12%);
 }
 </style>

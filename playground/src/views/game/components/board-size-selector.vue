@@ -8,7 +8,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'boardSizeChange', size: BoardSize): void
+  (e: 'update:boardSize', size: BoardSize): void
 }>();
 </script>
 
@@ -23,7 +23,7 @@ const emit = defineEmits<{
       :value="props.boardSize"
       :disabled="props.disabled"
       aria-label="选择棋盘尺寸"
-      @change="emit('boardSizeChange', Number(($event.target as HTMLSelectElement).value) as BoardSize)"
+      @change="emit('update:boardSize', Number(($event.target as HTMLSelectElement).value) as BoardSize)"
     >
       <option v-for="opt in BOARD_SIZE_OPTIONS" :key="opt.value" :value="opt.value">
         {{ opt.label }}
@@ -58,8 +58,8 @@ const emit = defineEmits<{
 }
 
 .select-control {
-  min-height: 32px;
   max-width: 100px;
+  min-height: 32px;
   padding: 0 8px;
   font-size: 12px;
   font-weight: 700;

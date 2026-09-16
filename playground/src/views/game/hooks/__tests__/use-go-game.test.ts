@@ -23,12 +23,18 @@ function createSnapshot(): GoGameSnapshot {
   };
 }
 
-function createBoardRef(play: GoBoardInstance['play']) {
-  return ref({ play } as unknown as GoBoardInstance) as Ref<GoBoardInstance | null>;
+function createBoardRef(
+  play: GoBoardInstance['play'],
+  reset: GoBoardInstance['reset'] = vi.fn(() => true),
+) {
+  return ref({ play, reset } as unknown as GoBoardInstance) as Ref<GoBoardInstance | null>;
 }
 
-function setupGame(play: GoBoardInstance['play'] = vi.fn(() => true)) {
-  const boardRef = createBoardRef(play);
+function setupGame(
+  play: GoBoardInstance['play'] = vi.fn(() => true),
+  reset: GoBoardInstance['reset'] = vi.fn(() => true),
+) {
+  const boardRef = createBoardRef(play, reset);
   const scope = effectScope();
   const game = scope.run(() => useGoGame(boardRef))!;
 
@@ -78,7 +84,7 @@ describe('game AI error recovery', () => {
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(11);
     expect(game.aiError.value).toBe('AI 服务暂时不可用');
 
-    await game.retryAI();
+    await game.handleRetryAI();
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(12);
     expect(play).toHaveBeenCalledWith([2, 2]);
@@ -145,6 +151,41 @@ describe('game AI error recovery', () => {
     await game.triggerAI(snapshot);
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledWith(expect.objectContaining({ ko: undefined }));
+
+    scope.stop();
+  });
+
+  it('ai 主动结束时提示并支持手动重试', async () => {
+    mockedFetchAnalyzeGoGame
+      .mockResolvedValueOnce({ data: { action: 'end_game' }, error: null })
+      .mockResolvedValueOnce({ data: { action: 'move', vertex: [2, 2] }, error: null });
+    const play = vi.fn(() => true);
+    const { game, scope } = setupGame(play);
+
+    await game.triggerAI(createSnapshot());
+
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(1);
+    expect(game.aiError.value).toBe('AI申请结束');
+    expect(game.isAIThinking.value).toBe(false);
+
+    await game.handleRetryAI();
+
+    expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(2);
+    expect(play).toHaveBeenCalledWith([2, 2]);
+    expect(game.aiError.value).toBe('');
+
+    scope.stop();
+  });
+
+  it('开始新局时使用传入的棋盘尺寸', () => {
+    const reset = vi.fn(() => true);
+    const { game, scope } = setupGame(vi.fn(() => true), reset);
+
+    expect(reset).not.toHaveBeenCalled();
+
+    game.handleNewGame(13);
+
+    expect(reset).toHaveBeenCalledWith({ size: 13 });
 
     scope.stop();
   });

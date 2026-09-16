@@ -5,8 +5,6 @@ import { formatPlayer } from '@/utils/format';
 const props = defineProps<{
   currentPlayer: -1 | 1
   moveCount: number
-  passCount: number
-  gameStatus: 'playing' | 'ended'
   isAIThinking: boolean
   aiError: string
 }>();
@@ -16,7 +14,6 @@ defineEmits<{
 }>();
 
 const playerText = computed(() => formatPlayer(props.currentPlayer));
-const statusText = computed(() => props.gameStatus === 'ended' ? '对局结束' : '对弈中');
 const playerIsBlack = computed(() => props.currentPlayer === 1);
 </script>
 
@@ -35,15 +32,10 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
         <span>手数</span>
         <strong>{{ props.moveCount }}</strong>
       </div>
-      <div class="mini-stat">
-        <span>停一着</span>
-        <strong>{{ props.passCount }} / 2</strong>
-      </div>
     </div>
     <div
       class="status-message"
       :class="{
-        'ended': props.gameStatus === 'ended' && !props.aiError,
         'thinking': props.isAIThinking && !props.aiError,
         'ai-error': Boolean(props.aiError),
       }"
@@ -52,7 +44,7 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
     >
       <i />
       <span class="status-copy">
-        {{ props.aiError || (props.isAIThinking ? 'AI 正在思考下一步' : statusText) }}
+        {{ props.aiError || (props.isAIThinking ? 'AI 正在思考下一步' : '对弈中') }}
       </span>
       <button v-if="props.aiError" class="retry-button" type="button" @click="$emit('retry')">
         重试
@@ -119,7 +111,7 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 9px;
 }
 
@@ -197,14 +189,5 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 
 .status-message.thinking i {
   background: #c49437;
-}
-
-.status-message.ended {
-  color: var(--danger);
-  background: #f4e4df;
-}
-
-.status-message.ended i {
-  background: var(--danger);
 }
 </style>
