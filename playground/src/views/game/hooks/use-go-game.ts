@@ -1,7 +1,7 @@
 import type { GoBoardInstance, GoGameSnapshot } from '@go-board/design';
 import type { Ref } from 'vue';
 import type { BoardSize } from '@/constants/app';
-import { computed, ref, shallowRef } from 'vue';
+import { computed, nextTick, ref, shallowRef } from 'vue';
 import { fetchAnalyzeGoGame } from '@/service/api';
 
 const AI_INVALID_MOVE_ERROR = 'AI 返回的下棋位置无效，请重试';
@@ -153,8 +153,13 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
     return false;
   }
 
-  function handlePass() {
-    boardRef.value?.play();
+  async function handlePass() {
+    if (boardRef.value?.play()) {
+      await nextTick();
+      if (currentPlayer.value === -1) {
+        handleRetryAI();
+      }
+    };
   }
 
   function handleNewGame(size: BoardSize) {
