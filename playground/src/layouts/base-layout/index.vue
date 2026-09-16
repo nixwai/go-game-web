@@ -111,6 +111,7 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   min-height: 76px;
   margin: 0 auto;
 }
