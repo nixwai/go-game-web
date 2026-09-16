@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { GoBoardInstance } from '@go-board/design';
 import { GoBoard, GoHistoryButton, GoHistorySlider, GoSave } from '@go-board/design';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
-import GameControls from './components/game-controls.vue';
+import BoardSizeSelector from './components/board-size-selector.vue';
+import BoardTopline from './components/board-topline.vue';
+import CoordinateToggle from './components/coordinate-toggle.vue';
+import GameActionButtons from './components/game-action-buttons.vue';
 import GameSidebar from './components/game-sidebar.vue';
 import GameStatus from './components/game-status.vue';
 import ModelSelector from './components/model-selector.vue';
@@ -12,11 +15,11 @@ import { useGoGame } from './hooks/use-go-game';
 defineOptions({ name: 'GameView' });
 
 const boardRef = ref<GoBoardInstance | null>(null);
+const coord = ref(false);
 const aiStore = useAIStore();
 
 const {
   boardSize,
-  showCoord,
   aiEnabled,
   isAIThinking,
   aiError,
@@ -34,12 +37,6 @@ const {
   handleBoardSizeChange,
 } = useGoGame(boardRef);
 
-const statusLabel = computed(() => gameStatus.value === 'ended' ? '对局已结束' : '对弈进行中');
-
-function handleToggleCoord() {
-  showCoord.value = !showCoord.value;
-}
-
 function handleToggleAI() {
   aiEnabled.value = !aiEnabled.value;
 }
@@ -55,23 +52,14 @@ onMounted(async () => {
     <section class="game-shell">
       <div class="game-layout">
         <div class="board-column">
-          <div class="board-topline">
-            <div class="player-pair">
-              <span class="player-badge"><i class="stone-dot black" />你 · 黑方</span>
-              <span class="versus">VS</span>
-              <span class="player-badge"><i class="stone-dot white" />AI · 白方</span>
-            </div>
-            <span class="status-pill" :class="{ ended: gameStatus === 'ended' }">
-              <i />{{ statusLabel }}
-            </span>
-          </div>
+          <BoardTopline :game-status="gameStatus" />
 
           <GoSave>
             <div class="board-stage">
               <GoBoard
                 ref="boardRef"
                 :init="{ size: boardSize }"
-                :show-coord="showCoord"
+                :show-coord="coord"
                 :disabled="isAIThinking || gameStatus === 'ended'"
                 width="620px"
                 @move="onMove"
@@ -119,17 +107,21 @@ onMounted(async () => {
             />
           </template>
           <template #controls>
-            <GameControls
-              :board-size="boardSize"
-              :show-coord="showCoord"
-              :is-a-i-thinking="isAIThinking"
-              :game-status="gameStatus"
-              @pass="handlePass"
-              @resign="handleResign"
-              @new-game="handleNewGame"
-              @board-size-change="handleBoardSizeChange"
-              @toggle-coord="handleToggleCoord"
-            />
+            <div class="game-controls">
+              <BoardSizeSelector
+                :board-size="boardSize"
+                :disabled="isAIThinking || gameStatus === 'ended'"
+                @board-size-change="handleBoardSizeChange"
+              />
+              <CoordinateToggle v-model:coord="coord" />
+              <GameActionButtons
+                :pass-disabled="isAIThinking || gameStatus === 'ended'"
+                :resign-disabled="gameStatus === 'ended'"
+                @pass="handlePass"
+                @resign="handleResign"
+                @new-game="handleNewGame"
+              />
+            </div>
           </template>
         </GameSidebar>
       </div>
@@ -140,6 +132,12 @@ onMounted(async () => {
 <style scoped>
 .game-view {
   padding: 0 20px;
+}
+
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .game-shell {
@@ -168,85 +166,6 @@ h1 {
   grid-template-columns: auto 280px;
   gap: 46px;
   align-items: start;
-}
-
-.board-topline {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  width: 620px;
-  margin: 0 auto 13px;
-}
-
-.player-pair {
-  display: flex;
-  gap: 11px;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 650;
-  color: var(--muted);
-}
-
-.player-badge {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.versus {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--soft-muted);
-  letter-spacing: 0.08em;
-}
-
-.stone-dot {
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-}
-
-.stone-dot.black {
-  background: #1c1d1a;
-  box-shadow: 1px 1px 2px rgb(0 0 0 / 24%);
-}
-
-.stone-dot.white {
-  background: #fff;
-  border: 1px solid #c8c8c0;
-  box-shadow: 1px 1px 2px rgb(0 0 0 / 12%);
-}
-
-.status-pill {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 750;
-  color: var(--sage-dark);
-  background: var(--sage-soft);
-  border-radius: 99px;
-}
-
-.status-pill i {
-  width: 6px;
-  height: 6px;
-  background: #5c9b6c;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgb(92 155 108 / 14%);
-}
-
-.status-pill.ended {
-  color: var(--danger);
-  background: #f4e4df;
-}
-
-.status-pill.ended i {
-  background: var(--danger);
-  box-shadow: 0 0 0 3px rgb(169 88 77 / 12%);
 }
 
 .board-stage {

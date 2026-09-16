@@ -2,7 +2,7 @@ declare namespace StorageType {
   interface Local {
     token: string
     boardSize: string
-    showCoord: string
+    coord: string
     aiEnabled: string
     selectedModelId: string
   }

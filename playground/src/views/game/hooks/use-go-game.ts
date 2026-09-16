@@ -40,7 +40,6 @@ export function getAIErrorMessage(error: unknown): string {
 
 export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
   const boardSize = ref<BoardSize>(9);
-  const showCoord = ref(false);
   const aiEnabled = ref(true);
   const isAIThinking = ref(false);
   const aiError = ref('');
@@ -249,7 +248,6 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
 
   return {
     boardSize,
-    showCoord,
     aiEnabled,
     isAIThinking,
     aiError,
