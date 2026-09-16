@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import type { BoardSize } from '@/constants/app';
 import { computed } from 'vue';
-import { useGameStore } from '@/store/modules/game';
 import { BOARD_SIZE_OPTIONS } from '../config/constants';
 
-const emit = defineEmits<Emits>();
-const gameStore = useGameStore();
+const props = defineProps<{
+  boardSize: BoardSize
+  showCoord: boolean
+  isAIThinking: boolean
+  gameStatus: 'playing' | 'ended'
+}>();
 
-interface Emits {
+const emit = defineEmits<{
   (e: 'pass'): void
   (e: 'resign'): void
   (e: 'newGame'): void
   (e: 'boardSizeChange', size: BoardSize): void
   (e: 'toggleCoord'): void
-}
+}>();
 
-const disabled = computed(() => gameStore.isAIThinking || gameStore.gameStatus === 'ended');
+const disabled = computed(() => props.isAIThinking || props.gameStatus === 'ended');
 </script>
 
 <template>
@@ -27,7 +30,7 @@ const disabled = computed(() => gameStore.isAIThinking || gameStore.gameStatus =
       </div>
       <select
         class="select-control"
-        :value="gameStore.boardSize"
+        :value="props.boardSize"
         :disabled="disabled"
         aria-label="选择棋盘尺寸"
         @change="emit('boardSizeChange', Number(($event.target as HTMLSelectElement).value) as BoardSize)"
@@ -44,12 +47,12 @@ const disabled = computed(() => gameStore.isAIThinking || gameStore.gameStatus =
       </div>
       <button
         class="toggle-control"
-        :class="{ enabled: gameStore.showCoord }"
+        :class="{ enabled: props.showCoord }"
         type="button"
-        :aria-pressed="gameStore.showCoord"
+        :aria-pressed="props.showCoord"
         @click="emit('toggleCoord')"
       >
-        <span />{{ gameStore.showCoord ? '开启' : '关闭' }}
+        <span />{{ props.showCoord ? '开启' : '关闭' }}
       </button>
     </div>
     <div class="action-grid">
@@ -59,7 +62,7 @@ const disabled = computed(() => gameStore.isAIThinking || gameStore.gameStatus =
       <button
         class="action-button danger"
         type="button"
-        :disabled="gameStore.gameStatus === 'ended'"
+        :disabled="props.gameStatus === 'ended'"
         @click="emit('resign')"
       >
         认输

@@ -1,35 +1,49 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { fetchGoGameSetting, fetchUpdateGoGameSetting } from '@/service/api';
 import { useAIStore } from '@/store/modules/ai';
-import { useGameStore } from '@/store/modules/game';
 
-const emit = defineEmits<Emits>();
-const gameStore = useGameStore();
+defineProps<{
+  aiEnabled: boolean
+  isAIThinking: boolean
+}>();
+
+const emit = defineEmits<{
+  (e: 'toggleAI'): void
+}>();
+
 const aiStore = useAIStore();
+const setting = ref<Api.AiGo.GameSettingResponse | null>(null);
 
-const selectedModelId = computed(() => gameStore.setting?.active_model_id ?? 0);
+const selectedModelId = computed(() => setting.value?.active_model_id ?? 0);
 const modelOptions = computed(() => {
   if (aiStore.activeModels.length === 0) {
     return [{ label: '默认模型', value: 0 }];
   }
 
   return aiStore.activeModels.map(model => ({
-    label: `${model.provider_name} / ${model.model_name}${model.is_default ? ' · 默认' : ''}`,
+    label: `${model.provider_name} / ${model.model_name}`,
     value: model.id,
   }));
 });
 
-function toggleAI() {
-  gameStore.aiEnabled = !gameStore.aiEnabled;
+async function getSettings() {
+  const { data, error } = await fetchGoGameSetting();
+
+  if (!error && data) {
+    setting.value = data;
+  }
 }
 
-interface Emits {
-  (e: 'modelChange', modelId: number): void
-}
+onMounted(getSettings);
 
-function onModelChange(event: Event) {
+async function onModelChange(event: Event) {
   const modelId = Number((event.target as HTMLSelectElement).value);
-  emit('modelChange', modelId);
+  const { error } = await fetchUpdateGoGameSetting({ active_model_id: modelId });
+
+  if (!error) {
+    await getSettings();
+  }
 }
 </script>
 
@@ -40,20 +54,20 @@ function onModelChange(event: Event) {
         <span class="ai-avatar" aria-hidden="true">✦</span>
         <div>
           <strong>智能对手</strong>
-          <small>{{ gameStore.aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
+          <small>{{ aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
         </div>
       </div>
       <button
         class="ai-toggle"
-        :class="{ enabled: gameStore.aiEnabled }"
+        :class="{ enabled: aiEnabled }"
         type="button"
-        :aria-pressed="gameStore.aiEnabled"
-        @click="toggleAI"
+        :aria-pressed="aiEnabled"
+        @click="emit('toggleAI')"
       >
-        <span />{{ gameStore.aiEnabled ? '开启' : '关闭' }}
+        <span />{{ aiEnabled ? '开启' : '关闭' }}
       </button>
     </div>
-    <label v-if="gameStore.aiEnabled" class="model-field">
+    <label v-if="aiEnabled" class="model-field">
       <span>使用模型</span>
       <select :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
         <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
@@ -61,7 +75,7 @@ function onModelChange(event: Event) {
         </option>
       </select>
     </label>
-    <p v-if="gameStore.isAIThinking" class="thinking-label">
+    <p v-if="isAIThinking" class="thinking-label">
       <span class="thinking-spinner" />AI 正在分析局面...
     </p>
   </div>

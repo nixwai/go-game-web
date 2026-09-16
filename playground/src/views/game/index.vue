@@ -1,31 +1,53 @@
 <script setup lang="ts">
 import type { GoBoardInstance } from '@go-board/design';
 import { GoBoard, GoHistoryButton, GoHistorySlider, GoSave } from '@go-board/design';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useAIStore } from '@/store/modules/ai';
+import GameControls from './components/game-controls.vue';
 import GameSidebar from './components/game-sidebar.vue';
+import GameStatus from './components/game-status.vue';
+import ModelSelector from './components/model-selector.vue';
 import { useGoGame } from './hooks/use-go-game';
 
 defineOptions({ name: 'GameView' });
 
 const boardRef = ref<GoBoardInstance | null>(null);
+const aiStore = useAIStore();
 
 const {
-  gameStore,
+  boardSize,
+  showCoord,
+  aiEnabled,
+  isAIThinking,
+  aiError,
+  gameStatus,
+  passCount,
+  currentPlayer,
+  moveCount,
+  initGame,
   onMove,
   onUpdate,
+  retryAI,
   handlePass,
   handleResign,
   handleNewGame,
   handleBoardSizeChange,
-  handleModelChange,
-  handleRetryAI,
 } = useGoGame(boardRef);
 
-const statusLabel = computed(() => gameStore.gameStatus === 'ended' ? '对局已结束' : '对弈进行中');
+const statusLabel = computed(() => gameStatus.value === 'ended' ? '对局已结束' : '对弈进行中');
 
 function handleToggleCoord() {
-  gameStore.showCoord = !gameStore.showCoord;
+  showCoord.value = !showCoord.value;
 }
+
+function handleToggleAI() {
+  aiEnabled.value = !aiEnabled.value;
+}
+
+onMounted(async () => {
+  await aiStore.fetchProviders();
+  initGame();
+});
 </script>
 
 <template>
@@ -39,7 +61,7 @@ function handleToggleCoord() {
               <span class="versus">VS</span>
               <span class="player-badge"><i class="stone-dot white" />AI · 白方</span>
             </div>
-            <span class="status-pill" :class="{ ended: gameStore.gameStatus === 'ended' }">
+            <span class="status-pill" :class="{ ended: gameStatus === 'ended' }">
               <i />{{ statusLabel }}
             </span>
           </div>
@@ -48,9 +70,9 @@ function handleToggleCoord() {
             <div class="board-stage">
               <GoBoard
                 ref="boardRef"
-                :init="{ size: gameStore.boardSize }"
-                :show-coord="gameStore.showCoord"
-                :disabled="gameStore.isAIThinking || gameStore.gameStatus === 'ended'"
+                :init="{ size: boardSize }"
+                :show-coord="showCoord"
+                :disabled="isAIThinking || gameStatus === 'ended'"
                 width="620px"
                 @move="onMove"
                 @update="onUpdate"
@@ -60,16 +82,16 @@ function handleToggleCoord() {
             <div class="history-panel">
               <div class="history-heading">
                 棋局历史
-                <GoHistorySlider :disabled="gameStore.isAIThinking" class="flex-1" />
+                <GoHistorySlider :disabled="isAIThinking" class="flex-1" />
               </div>
               <div class="history-actions">
-                <GoHistoryButton :step="-1" :disabled="gameStore.isAIThinking" aria-label="后退一步">
+                <GoHistoryButton :step="-1" :disabled="isAIThinking" aria-label="后退一步">
                   <span aria-hidden="true">←</span> 后退
                 </GoHistoryButton>
-                <GoHistoryButton :step="1" :disabled="gameStore.isAIThinking" aria-label="前进一步">
+                <GoHistoryButton :step="1" :disabled="isAIThinking" aria-label="前进一步">
                   前进 <span aria-hidden="true">→</span>
                 </GoHistoryButton>
-                <GoHistoryButton :step="0" :disabled="gameStore.isAIThinking" aria-label="清空棋局历史">
+                <GoHistoryButton :step="0" :disabled="isAIThinking" aria-label="清空棋局历史">
                   清空历史
                 </GoHistoryButton>
               </div>
@@ -77,15 +99,39 @@ function handleToggleCoord() {
           </GoSave>
         </div>
 
-        <GameSidebar
-          @pass="handlePass"
-          @resign="handleResign"
-          @new-game="handleNewGame"
-          @board-size-change="handleBoardSizeChange"
-          @toggle-coord="handleToggleCoord"
-          @model-change="handleModelChange"
-          @retry="handleRetryAI"
-        />
+        <GameSidebar>
+          <template #status>
+            <GameStatus
+              :current-player="currentPlayer"
+              :move-count="moveCount"
+              :pass-count="passCount"
+              :game-status="gameStatus"
+              :is-a-i-thinking="isAIThinking"
+              :ai-error="aiError"
+              @retry="retryAI"
+            />
+          </template>
+          <template #ai>
+            <ModelSelector
+              :ai-enabled="aiEnabled"
+              :is-a-i-thinking="isAIThinking"
+              @toggle-a-i="handleToggleAI"
+            />
+          </template>
+          <template #controls>
+            <GameControls
+              :board-size="boardSize"
+              :show-coord="showCoord"
+              :is-a-i-thinking="isAIThinking"
+              :game-status="gameStatus"
+              @pass="handlePass"
+              @resign="handleResign"
+              @new-game="handleNewGame"
+              @board-size-change="handleBoardSizeChange"
+              @toggle-coord="handleToggleCoord"
+            />
+          </template>
+        </GameSidebar>
       </div>
     </section>
   </div>

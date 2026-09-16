@@ -1,8 +1,10 @@
 import type { GoBoardInstance, GoGameSnapshot } from '@go-board/design';
+import type { Ref } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { effectScope, ref } from 'vue';
 import { fetchAnalyzeGoGame } from '@/service/api';
-import { useGameStore } from '../index';
+import { useGoGame } from '../use-go-game';
 
 vi.mock('@/service/api', () => ({
   fetchAnalyzeGoGame: vi.fn(),
@@ -22,10 +24,18 @@ function createSnapshot(): GoGameSnapshot {
 }
 
 function createBoardRef(play: GoBoardInstance['play']) {
-  return { value: { play } } as { value: GoBoardInstance };
+  return ref({ play } as unknown as GoBoardInstance) as Ref<GoBoardInstance | null>;
 }
 
-describe('game store AI error recovery', () => {
+function setupGame(play: GoBoardInstance['play'] = vi.fn(() => true)) {
+  const boardRef = createBoardRef(play);
+  const scope = effectScope();
+  const game = scope.run(() => useGoGame(boardRef))!;
+
+  return { boardRef, game, scope };
+}
+
+describe('game AI error recovery', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     mockedFetchAnalyzeGoGame.mockReset();
@@ -37,15 +47,16 @@ describe('game store AI error recovery', () => {
       .mockResolvedValueOnce({ data: null, error: new Error('AI 服务暂时不可用') })
       .mockResolvedValueOnce({ data: { action: 'move', vertex: [2, 2] }, error: null });
     const play = vi.fn(() => true);
-    const boardRef = createBoardRef(play);
-    const store = useGameStore();
+    const { game, scope } = setupGame(play);
 
-    await store.triggerAI(boardRef, createSnapshot());
+    await game.triggerAI(createSnapshot());
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(3);
     expect(play).toHaveBeenCalledWith([2, 2]);
-    expect(store.aiError).toBe('');
-    expect(store.isAIThinking).toBe(false);
+    expect(game.aiError.value).toBe('');
+    expect(game.isAIThinking.value).toBe(false);
+
+    scope.stop();
   });
 
   it('自动重试失败后显示异常，并支持再次手动重试', async () => {
@@ -60,19 +71,20 @@ describe('game store AI error recovery', () => {
       error: null,
     });
     const play = vi.fn(() => true);
-    const boardRef = createBoardRef(play);
-    const store = useGameStore();
+    const { game, scope } = setupGame(play);
 
-    await store.triggerAI(boardRef, createSnapshot());
+    await game.triggerAI(createSnapshot());
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(11);
-    expect(store.aiError).toBe('AI 服务暂时不可用');
+    expect(game.aiError.value).toBe('AI 服务暂时不可用');
 
-    await store.retryAI(boardRef);
+    await game.retryAI();
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(12);
     expect(play).toHaveBeenCalledWith([2, 2]);
-    expect(store.aiError).toBe('');
+    expect(game.aiError.value).toBe('');
+
+    scope.stop();
   });
 
   it('下棋位置无效后自动重试并在合法位置落子', async () => {
@@ -84,14 +96,15 @@ describe('game store AI error recovery', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
-    const boardRef = createBoardRef(play);
-    const store = useGameStore();
+    const { game, scope } = setupGame(play);
 
-    await store.triggerAI(boardRef, createSnapshot());
+    await game.triggerAI(createSnapshot());
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledTimes(3);
     expect(play).toHaveBeenCalledTimes(3);
-    expect(store.aiError).toBe('');
+    expect(game.aiError.value).toBe('');
+
+    scope.stop();
   });
 
   it('按接口约定传入完整的 ko 信息', async () => {
@@ -99,14 +112,13 @@ describe('game store AI error recovery', () => {
       data: { action: 'move', vertex: [2, 2] },
       error: null,
     });
-    const boardRef = createBoardRef(vi.fn(() => true));
-    const store = useGameStore();
+    const { game, scope } = setupGame(vi.fn(() => true));
     const snapshot = {
       ...createSnapshot(),
       ko: { sign: -1 as const, vertex: [1, 2] as [number, number] },
     };
 
-    await store.triggerAI(boardRef, snapshot);
+    await game.triggerAI(snapshot);
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledWith(expect.objectContaining({
       ko: {
@@ -115,6 +127,8 @@ describe('game store AI error recovery', () => {
       },
       latestVertex: [3, 3],
     }));
+
+    scope.stop();
   });
 
   it('不传入不符合接口约定的无效 ko', async () => {
@@ -122,16 +136,17 @@ describe('game store AI error recovery', () => {
       data: { action: 'move', vertex: [2, 2] },
       error: null,
     });
-    const boardRef = createBoardRef(vi.fn(() => true));
-    const store = useGameStore();
+    const { game, scope } = setupGame(vi.fn(() => true));
     const snapshot = {
       ...createSnapshot(),
       ko: { sign: 0, vertex: [1, 2] as [number, number] },
     } as GoGameSnapshot;
 
-    await store.triggerAI(boardRef, snapshot);
+    await game.triggerAI(snapshot);
 
     expect(mockedFetchAnalyzeGoGame).toHaveBeenCalledWith(expect.objectContaining({ ko: undefined }));
+
+    scope.stop();
   });
 
   it('ai 返回无效位置或棋盘拒绝落子时显示异常原因', async () => {
@@ -139,12 +154,13 @@ describe('game store AI error recovery', () => {
       data: { action: 'move', vertex: [2, 2] },
       error: null,
     });
-    const boardRef = createBoardRef(vi.fn(() => false));
-    const store = useGameStore();
+    const { game, scope } = setupGame(vi.fn(() => false));
 
-    await store.triggerAI(boardRef, createSnapshot());
+    await game.triggerAI(createSnapshot());
 
-    expect(store.aiError).toBe('AI 返回的下棋位置无效，请重试');
-    expect(store.isAIThinking).toBe(false);
+    expect(game.aiError.value).toBe('AI 返回的下棋位置无效，请重试');
+    expect(game.isAIThinking.value).toBe(false);
+
+    scope.stop();
   });
 });

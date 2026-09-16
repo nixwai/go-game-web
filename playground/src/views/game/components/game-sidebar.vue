@@ -1,20 +1,4 @@
 <script setup lang="ts">
-import type { BoardSize } from '@/constants/app';
-import GameControls from './game-controls.vue';
-import GameStatus from './game-status.vue';
-import ModelSelector from './model-selector.vue';
-
-interface Emits {
-  (e: 'pass'): void
-  (e: 'resign'): void
-  (e: 'newGame'): void
-  (e: 'boardSizeChange', size: BoardSize): void
-  (e: 'toggleCoord'): void
-  (e: 'retry'): void
-  (e: 'modelChange', modelId: number): void
-}
-
-const emit = defineEmits<Emits>();
 </script>
 
 <template>
@@ -34,7 +18,7 @@ const emit = defineEmits<Emits>();
         <span>当前对局</span>
         <span class="section-line" />
       </div>
-      <GameStatus @retry="emit('retry')" />
+      <slot name="status" />
     </section>
 
     <section class="control-section">
@@ -42,7 +26,7 @@ const emit = defineEmits<Emits>();
         <span>AI 对手</span>
         <span class="section-line" />
       </div>
-      <ModelSelector @model-change="emit('modelChange', $event)" />
+      <slot name="ai" />
     </section>
 
     <section class="control-section">
@@ -50,13 +34,7 @@ const emit = defineEmits<Emits>();
         <span>棋盘偏好</span>
         <span class="section-line" />
       </div>
-      <GameControls
-        @pass="emit('pass')"
-        @resign="emit('resign')"
-        @new-game="emit('newGame')"
-        @board-size-change="emit('boardSizeChange', $event)"
-        @toggle-coord="emit('toggleCoord')"
-      />
+      <slot name="controls" />
     </section>
   </aside>
 </template>

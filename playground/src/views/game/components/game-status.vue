@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useGameStore } from '@/store/modules/game';
 import { formatPlayer } from '@/utils/format';
 
-const emit = defineEmits<{
+const props = defineProps<{
+  currentPlayer: -1 | 1
+  moveCount: number
+  passCount: number
+  gameStatus: 'playing' | 'ended'
+  isAIThinking: boolean
+  aiError: string
+}>();
+
+defineEmits<{
   (e: 'retry'): void
 }>();
 
-const gameStore = useGameStore();
-
-const playerText = computed(() => formatPlayer(gameStore.currentPlayer));
-const statusText = computed(() => gameStore.gameStatus === 'ended' ? '对局结束' : '对弈中');
-const playerIsBlack = computed(() => gameStore.currentPlayer === 1);
+const playerText = computed(() => formatPlayer(props.currentPlayer));
+const statusText = computed(() => props.gameStatus === 'ended' ? '对局结束' : '对弈中');
+const playerIsBlack = computed(() => props.currentPlayer === 1);
 </script>
 
 <template>
@@ -27,28 +33,28 @@ const playerIsBlack = computed(() => gameStore.currentPlayer === 1);
     <div class="status-grid">
       <div class="mini-stat">
         <span>手数</span>
-        <strong>{{ gameStore.moveCount }}</strong>
+        <strong>{{ props.moveCount }}</strong>
       </div>
       <div class="mini-stat">
         <span>停一着</span>
-        <strong>{{ gameStore.passCount }} / 2</strong>
+        <strong>{{ props.passCount }} / 2</strong>
       </div>
     </div>
     <div
       class="status-message"
       :class="{
-        'ended': gameStore.gameStatus === 'ended' && !gameStore.aiError,
-        'thinking': gameStore.isAIThinking && !gameStore.aiError,
-        'ai-error': Boolean(gameStore.aiError),
+        'ended': props.gameStatus === 'ended' && !props.aiError,
+        'thinking': props.isAIThinking && !props.aiError,
+        'ai-error': Boolean(props.aiError),
       }"
-      :role="gameStore.aiError ? 'alert' : undefined"
-      :aria-live="gameStore.aiError ? 'assertive' : undefined"
+      :role="props.aiError ? 'alert' : undefined"
+      :aria-live="props.aiError ? 'assertive' : undefined"
     >
       <i />
       <span class="status-copy">
-        {{ gameStore.aiError || (gameStore.isAIThinking ? 'AI 正在思考下一步' : statusText) }}
+        {{ props.aiError || (props.isAIThinking ? 'AI 正在思考下一步' : statusText) }}
       </span>
-      <button v-if="gameStore.aiError" class="retry-button" type="button" @click="emit('retry')">
+      <button v-if="props.aiError" class="retry-button" type="button" @click="$emit('retry')">
         重试
       </button>
     </div>
