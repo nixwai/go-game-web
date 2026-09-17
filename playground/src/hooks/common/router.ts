@@ -34,6 +34,10 @@ export function useRouterPush(inSetup = true) {
     return routerPush({ path: '/settings' });
   }
 
+  async function toProfile() {
+    return routerPush({ path: '/profile' });
+  }
+
   async function redirectFromLogin(needRedirect = true) {
     const redirect = route.value.query?.redirect as string;
 
@@ -52,6 +56,7 @@ export function useRouterPush(inSetup = true) {
     toRegister,
     toGame,
     toSettings,
+    toProfile,
     redirectFromLogin,
   };
 }

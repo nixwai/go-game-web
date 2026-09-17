@@ -12,6 +12,9 @@ export interface AuthFormField {
   }[]
 }
 
+/** 密码格式：长度 8-128 且同时包含字母和数字，与后端校验保持一致。 */
+export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*\d).+$/i;
+
 /** 登录与注册共用的表单字段配置。 */
 export const formFields: AuthFormField[] = [
   {
@@ -29,7 +32,7 @@ export const formFields: AuthFormField[] = [
     placeholder: '8-128位，字母+数字',
     rules: [
       { required: true, message: '请输入密码' },
-      { required: true, min: 8, max: 128, pattern: /^(?=.*[a-z])(?=.*\d).+$/i, message: '8-128位，必须包含字母和数字' },
+      { required: true, min: 8, max: 128, pattern: PASSWORD_PATTERN, message: '8-128位，必须包含字母和数字' },
     ],
   },
 ];

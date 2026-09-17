@@ -3,7 +3,7 @@ import { computed, reactive, ref } from 'vue';
 import { SetupStoreId } from '@/enum';
 import { useRSA } from '@/hooks/common/crypto';
 import { useRouterPush } from '@/hooks/common/router';
-import { fetchCurrentUser, fetchLogin, fetchRegister } from '@/service/api';
+import { fetchChangePassword, fetchCurrentUser, fetchLogin, fetchRegister } from '@/service/api';
 import { localStg } from '@/utils/storage';
 import { clearAuthStorage, getToken } from './shared';
 
@@ -71,6 +71,17 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     }
   }
 
+  async function changePassword(oldPassword: string, newPassword: string) {
+    const encryptedOldPassword = await encrypt(oldPassword);
+    const encryptedNewPassword = await encrypt(newPassword);
+    const { error } = await fetchChangePassword({
+      old_password: encryptedOldPassword,
+      new_password: encryptedNewPassword,
+    });
+
+    return !error;
+  }
+
   async function resetStore() {
     clearAuthStorage();
     token.value = '';
@@ -91,6 +102,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     login,
     register,
     getUserInfo,
+    changePassword,
     initUserInfo,
     resetStore,
   };

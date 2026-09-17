@@ -27,6 +27,12 @@ export const builtinRoutes: RouteRecordRaw[] = [
     meta: { title: 'AI模型管理', requiresAuth: true },
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/profile/index.vue'),
+    meta: { title: '用户信息管理', requiresAuth: true },
+  },
+  {
     path: '/',
     redirect: '/game',
   },
