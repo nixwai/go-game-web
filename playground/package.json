@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@go-board/design": "^0.3.0",
+    "@go-board/design": "0.4.0",
     "@unocss/reset": "^66.10.0",
     "@vueuse/core": "^14.4.0",
     "axios": "^1.20.0",

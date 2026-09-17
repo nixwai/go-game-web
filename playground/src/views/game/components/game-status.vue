@@ -25,7 +25,7 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 <template>
   <div class="game-status flex flex-col gap-2.25">
     <div class="flex gap-2.5 items-center p-3 bg-mc-paper-50 border border-mc-neutral-200/80 rounded-xl">
-      <div class="turn-stone w-7.25 h-7.25 bg-mc-stone-950 border border-mc-stone-950 rounded-full shadow-[1px_2px_4px] shadow-mc-stone-950/23" :class="{ '!bg-mc-paper-0 !border-mc-stone-200': !playerIsBlack }" aria-hidden="true" />
+      <div class="turn-stone w-7.25 h-7.25 bg-mc-stone-950 border border-mc-stone-950 rounded-full shadow-[1px_2px_4px] shadow-mc-stone-950/23 dark:!bg-[#1c1d1a] dark:!border-[#1c1d1a] dark:shadow-[#1c1d1a]/23" :class="{ '!bg-mc-paper-0 !border-mc-stone-200 dark:!bg-[#fff] dark:!border-[#cacbc4]': !playerIsBlack }" aria-hidden="true" />
       <div class="turn-copy flex flex-1 flex-col gap-0.5">
         <span class="text-xs font-[650] text-mc-neutral-380">当前执棋</span>
         <strong class="text-lg font-[780] text-mc-ink-950">{{ playerText }}</strong>

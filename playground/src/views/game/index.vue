@@ -59,14 +59,13 @@ onMounted(async () => {
         <div class="board-column">
           <BoardTopline />
 
-          <GoSave v-model:value="history">
+          <GoSave v-model:value="history" :disabled="isAIThinking">
             <div class="board-stage flex justify-center w-full pb-5">
               <GoBoard
                 ref="boardRef"
                 class="game-board !w-board !border-mc-board-800/84 !rounded-4xl !shadow-board"
                 :init="{ size: boardSize }"
                 :show-coord="coord"
-                :disabled="isAIThinking"
                 width="620px"
                 @move="onMove"
                 @update="onUpdate"
@@ -76,13 +75,12 @@ onMounted(async () => {
             <div class="w-board mx-auto mt-2">
               <div class="flex gap-2 items-center mb-2.25 text-md font-[750] text-mc-ink-950">
                 棋局历史
-                <GoHistorySlider :disabled="isAIThinking" class="game-history-slider flex-1 accent-mc-sage-600" />
+                <GoHistorySlider class="game-history-slider flex-1 accent-mc-sage-600" />
               </div>
               <div class="history-actions flex gap-2 justify-center mt-3.25">
                 <GoHistoryButton
                   class="history-action-button min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
                   :step="-1"
-                  :disabled="isAIThinking"
                   aria-label="后退一步"
                 >
                   <span aria-hidden="true">←</span> 后退
@@ -90,12 +88,16 @@ onMounted(async () => {
                 <GoHistoryButton
                   class="history-action-button min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
                   :step="1"
-                  :disabled="isAIThinking"
                   aria-label="前进一步"
                 >
                   前进 <span aria-hidden="true">→</span>
                 </GoHistoryButton>
-                <button class="history-action-button min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]" type="button" :disabled="isAIThinking" @click="handlePass">
+                <button
+                  class="history-action-button min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
+                  type="button"
+                  :disabled="isAIThinking"
+                  @click="handlePass"
+                >
                   停一手
                 </button>
               </div>

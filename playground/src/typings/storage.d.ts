@@ -6,5 +6,6 @@ declare namespace StorageType {
     coord: string
     aiEnabled: string
     selectedModelId: string
+    theme: string
   }
 }

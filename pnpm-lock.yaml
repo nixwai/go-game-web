@@ -180,8 +180,8 @@ importers:
   playground:
     dependencies:
       '@go-board/design':
-        specifier: ^0.3.0
-        version: 0.3.0(vue@3.5.42(typescript@6.0.3))
+        specifier: 0.4.0
+        version: 0.4.0(vue@3.5.42(typescript@6.0.3))
       '@unocss/reset':
         specifier: ^66.10.0
         version: 66.10.1
@@ -507,16 +507,16 @@ packages:
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@go-board/design@0.3.0':
-    resolution: {integrity: sha512-Jd5Y5/nmMDBGcgFFAC1fVs1UNueWnOwvW2ZUHni/kxabP+lyQUIxDOKKZcWJZOAS6kI8Gw5Hcr0QYa0t0h/RIw==}
+  '@go-board/design@0.4.0':
+    resolution: {integrity: sha512-1I71/gEPfPux2K7xH+g6RR2XBHJzxuWt7qzNfy1cQWgpQ+VCql7MHb77u7/jcsA13xXtKAtP4OrwIaA0P22+Yg==}
     peerDependencies:
       vue: ^3.3.0
 
-  '@go-board/tool@0.3.0':
-    resolution: {integrity: sha512-w7YltPcsihV6/c9Jj/lj6GJBPWhUJTYJRgJFmrfgYzX8VmKYuEO6xldE9ArYvpI04Z5QpqBNd/hrK1pQie4w7w==}
+  '@go-board/tool@0.4.0':
+    resolution: {integrity: sha512-qi5N0pJbrIg4v6xvnktIh+H2N4o0Uwy53nfylZfA+pgLclk4uDtbTjxeJX0w6SNX5nOOWKU0nT5GkLtkJp6UZQ==}
 
-  '@go-board/ui@0.3.0':
-    resolution: {integrity: sha512-rZwXeTAOSKIGm5SkFwYx2ydquk42uG50msP9hyBNlUmhMsW0IVgIJT+R5EfuffnWehkpN7l4CpPW3qLNyc8UBQ==}
+  '@go-board/ui@0.4.0':
+    resolution: {integrity: sha512-+ncMbyUJAj7OIji6v+mpC+LTjOT0eVlbrOa3sg98BfcVHY37+41lqNKJDy3ZWrSZMHow7lngKg04Gi1+1cGYhg==}
     peerDependencies:
       vue: ^3.3.0
 
@@ -1061,6 +1061,9 @@ packages:
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
+
+  '@sabaki/deadstones@2.2.0':
+    resolution: {integrity: sha512-Sj7O8qShY34S4Cpa4ktAp/XP9cCTldqoUBHl9qcmbTK+zc35FtjBoDQ6/Q5KBSzbJz9dlMTfsF1GTsPwV5UlDA==}
 
   '@shikijs/core@4.4.3':
     resolution: {integrity: sha512-QCR4q2ZO/ILJEuwiBMel4wdcTDb1JGwfjKTxPDF6x8ixOaluPrVqIn06C99AcRPhmYlBR56d/Fb+GN58GzExpg==}
@@ -3889,15 +3892,17 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@go-board/design@0.3.0(vue@3.5.42(typescript@6.0.3))':
+  '@go-board/design@0.4.0(vue@3.5.42(typescript@6.0.3))':
     dependencies:
-      '@go-board/tool': 0.3.0
-      '@go-board/ui': 0.3.0(vue@3.5.42(typescript@6.0.3))
+      '@go-board/tool': 0.4.0
+      '@go-board/ui': 0.4.0(vue@3.5.42(typescript@6.0.3))
       vue: 3.5.42(typescript@6.0.3)
 
-  '@go-board/tool@0.3.0': {}
+  '@go-board/tool@0.4.0':
+    dependencies:
+      '@sabaki/deadstones': 2.2.0
 
-  '@go-board/ui@0.3.0(vue@3.5.42(typescript@6.0.3))':
+  '@go-board/ui@0.4.0(vue@3.5.42(typescript@6.0.3))':
     dependencies:
       vue: 3.5.42(typescript@6.0.3)
 
@@ -4235,6 +4240,8 @@ snapshots:
     optional: true
 
   '@rolldown/pluginutils@1.0.1': {}
+
+  '@sabaki/deadstones@2.2.0': {}
 
   '@shikijs/core@4.4.3':
     dependencies:
