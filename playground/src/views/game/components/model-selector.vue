@@ -30,6 +30,7 @@ const modelOptions = computed(() => {
   }));
 });
 
+/** 读取对局 AI 设置。 */
 async function getSettings() {
   const { data, error } = await fetchGoGameSetting();
 
@@ -38,16 +39,20 @@ async function getSettings() {
   }
 }
 
-onMounted(getSettings);
-
+/** 切换对局使用的模型。 */
 async function onModelChange(event: Event) {
   const modelId = Number((event.target as HTMLSelectElement).value);
-  const { error } = await fetchUpdateGoGameSetting({ active_model_id: modelId });
+  const { data, error } = await fetchUpdateGoGameSetting({ active_model_id: modelId });
 
-  if (!error) {
-    await getSettings();
+  if (!error && data) {
+    setting.value = data;
   }
 }
+
+onMounted(() => {
+  aiStore.fetchProviders();
+  getSettings();
+});
 </script>
 
 <template>

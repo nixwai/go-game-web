@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { GoBoardInstance, GoGameOptions } from '@go-board/design';
-import type { BoardSize } from '@/constants/app';
-import { GoBoard, GoHistoryButton, GoHistorySlider, GoSave } from '@go-board/design';
+import { GoBoard, GoSave } from '@go-board/design';
 import { computed, onMounted, ref } from 'vue';
-import { useAIStore } from '@/store/modules/ai';
 import BoardSizeSelector from './components/board-size-selector.vue';
 import BoardTopline from './components/board-topline.vue';
 import CoordinateToggle from './components/coordinate-toggle.vue';
 import GameActionButtons from './components/game-action-buttons.vue';
+import GameHistoryControls from './components/game-history-controls.vue';
 import GameSidebar from './components/game-sidebar.vue';
 import GameStatus from './components/game-status.vue';
 import ModelSelector from './components/model-selector.vue';
@@ -15,41 +14,29 @@ import { useGoGame } from './hooks/use-go-game';
 
 defineOptions({ name: 'GameView' });
 
-const boardSize = ref<BoardSize>(9);
 const boardRef = ref<GoBoardInstance | null>(null);
 const coord = ref(false);
 const history = ref<GoGameOptions[]>([]);
-const aiStore = useAIStore();
 
 /** 当前对局已落子的手数。 */
 const moveCount = computed(() => Math.max(history.value.length - 1, 0));
 
 const {
+  boardSize,
   aiEnabled,
   isAIThinking,
   aiError,
   currentPlayer,
   initGame,
+  retryAI,
+  toggleAI,
   onMove,
   onUpdate,
-  handleRetryAI,
   handlePass,
   handleNewGame,
 } = useGoGame(boardRef);
 
-/** 开启 AI 后若轮到白方，立即请求 AI 落子。 */
-function handleToggleAI() {
-  aiEnabled.value = !aiEnabled.value;
-
-  if (aiEnabled.value && currentPlayer.value === -1) {
-    handleRetryAI();
-  }
-}
-
-onMounted(async () => {
-  await aiStore.fetchProviders();
-  initGame();
-});
+onMounted(initGame);
 </script>
 
 <template>
@@ -72,36 +59,11 @@ onMounted(async () => {
               />
             </div>
 
-            <div class="w-board mx-auto mt-2">
-              <div class="flex gap-2 items-center mb-2.25 text-md font-[750] text-mc-ink-950">
-                棋局历史
-                <GoHistorySlider class="flex-1 accent-mc-sage-600" />
-              </div>
-              <div class="flex gap-2 justify-center mt-3.25">
-                <GoHistoryButton
-                  class="min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
-                  :step="-1"
-                  aria-label="后退一步"
-                >
-                  <span aria-hidden="true">←</span> 后退
-                </GoHistoryButton>
-                <GoHistoryButton
-                  class="min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
-                  :step="1"
-                  aria-label="前进一步"
-                >
-                  前进 <span aria-hidden="true">→</span>
-                </GoHistoryButton>
-                <button
-                  class="min-h-9 px-3.5 text-base font-[750] text-mc-sage-680 cursor-pointer bg-mc-sage-100 border-0 rounded-pill transition-all [&:not(:disabled):hover]:!text-mc-paper-0 [&:not(:disabled):hover]:!bg-mc-sage-600 [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
-                  type="button"
-                  :disabled="isAIThinking"
-                  @click="handlePass"
-                >
-                  停一手
-                </button>
-              </div>
-            </div>
+            <GameHistoryControls
+              class="w-board mx-auto mt-2"
+              :disabled="isAIThinking"
+              @pass="handlePass"
+            />
           </GoSave>
         </div>
 
@@ -112,21 +74,21 @@ onMounted(async () => {
               :move-count="moveCount"
               :is-a-i-thinking="isAIThinking"
               :ai-error="aiError"
-              @retry="handleRetryAI"
+              @retry="retryAI"
             />
           </template>
           <template #ai>
             <ModelSelector
               :ai-enabled="aiEnabled"
               :is-a-i-thinking="isAIThinking"
-              @toggle-a-i="handleToggleAI"
+              @toggle-a-i="toggleAI"
             />
           </template>
           <template #controls>
             <div class="flex flex-col gap-3.5">
               <CoordinateToggle v-model:coord="coord" />
               <BoardSizeSelector v-model:board-size="boardSize" :disabled="isAIThinking" />
-              <GameActionButtons @new-game="handleNewGame(boardSize)" />
+              <GameActionButtons @new-game="handleNewGame" />
             </div>
           </template>
         </GameSidebar>

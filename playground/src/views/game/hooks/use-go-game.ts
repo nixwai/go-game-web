@@ -2,189 +2,90 @@ import type { GoBoardInstance, GoGameSnapshot } from '@go-board/design';
 import type { Ref } from 'vue';
 import type { BoardSize } from '@/constants/app';
 import { computed, nextTick, ref, shallowRef } from 'vue';
-import { fetchAnalyzeGoGame } from '@/service/api';
+import { DEFAULT_BOARD_SIZE } from '../config/constants';
+import { useAIMove } from './use-ai-move';
 
-const AI_INVALID_MOVE_ERROR = 'AI 返回的下棋位置无效，请重试';
-const AI_INVALID_RESPONSE_ERROR = 'AI 返回了无效的响应，请重试';
-const AI_END_GAME_MESSAGE = 'AI申请结束';
-const AI_REQUEST_ERROR = 'AI 请求失败，请重试';
-const AI_MAX_RETRIES = 10;
-
-/** 提取错误中的提示，无法识别时返回默认文案。 */
-export function getAIErrorMessage(error: unknown): string {
-  if (error instanceof Error && error.message.trim()) {
-    return error.message.trim();
-  }
-
-  if (typeof error === 'string' && error.trim()) {
-    return error.trim();
-  }
-
-  return AI_REQUEST_ERROR;
-}
-
-/** 管理对局状态、AI 落子调度与重试。 */
+/** 编排对局状态、AI 落子调度与玩家动作。 */
 export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
+  const boardSize = ref<BoardSize>(DEFAULT_BOARD_SIZE);
   const aiEnabled = ref(true);
-  const isAIThinking = ref(false);
-  const aiError = ref('');
+  const { thinking: isAIThinking, error: aiError, clearError, cancel, move } = useAIMove(boardRef);
   const snapshot = shallowRef<GoGameSnapshot | null>(null);
-  /** 递增后使进行中的旧请求结果失效。 */
-  let aiRequestId = 0;
 
   const currentPlayer = computed(() => snapshot.value?.player ?? 1);
 
-  function clearAIError() {
-    aiError.value = '';
-  }
-
+  /** 初始化对局：使进行中的 AI 请求失效并复位提示。 */
   function initGame() {
-    aiRequestId++;
-    isAIThinking.value = false;
-    clearAIError();
+    cancel();
   }
 
-  function onMove(snap: GoGameSnapshot) {
-    snapshot.value = snap;
-    clearAIError();
+  /** 按当前局面重新请求 AI 落子。 */
+  async function retryAI(): Promise<boolean> {
+    if (!snapshot.value) {
+      return false;
+    }
 
-    if (!aiEnabled.value) {
+    return move(snapshot.value);
+  }
+
+  /** 切换 AI 自动落子；开启后轮到白方时立即请求落子。 */
+  function toggleAI() {
+    aiEnabled.value = !aiEnabled.value;
+
+    if (aiEnabled.value && currentPlayer.value === -1) {
+      void retryAI();
+    }
+  }
+
+  /** 记录棋盘变化，轮到白方时交由 AI 落子。 */
+  function onMove(nextSnapshot: GoGameSnapshot) {
+    snapshot.value = nextSnapshot;
+    clearError();
+
+    if (!aiEnabled.value || nextSnapshot.player !== -1) {
       return;
     }
 
-    if (snap.player === -1) {
-      void triggerAI(snap);
-    }
+    void move(nextSnapshot);
   }
 
-  function onUpdate(snap: GoGameSnapshot) {
-    clearAIError();
-    snapshot.value = snap;
+  /** 记录棋盘变化并清除上一次的失败提示。 */
+  function onUpdate(nextSnapshot: GoGameSnapshot) {
+    snapshot.value = nextSnapshot;
+    clearError();
   }
 
-  async function triggerAI(snap: GoGameSnapshot): Promise<boolean> {
-    if (isAIThinking.value) {
-      return false;
-    }
-
-    isAIThinking.value = true;
-    snapshot.value = snap;
-    clearAIError();
-    const requestId = ++aiRequestId;
-
-    try {
-      const ko = snap.ko && snap.ko.sign !== 0
-        ? { sign: snap.ko.sign, vertex: snap.ko.vertex }
-        : undefined;
-      let lastError = AI_REQUEST_ERROR;
-
-      // 请求失败或 AI 落子无效时重试，直到达到上限
-      for (let attempt = 0; attempt <= AI_MAX_RETRIES; attempt++) {
-        if (requestId !== aiRequestId) {
-          return false;
-        }
-
-        try {
-          const { data, error } = await fetchAnalyzeGoGame({
-            size: snap.size,
-            layout: snap.layout,
-            player: snap.player,
-            ko,
-            latestVertex: snap.latestVertex,
-          });
-
-          if (requestId !== aiRequestId) {
-            return false;
-          }
-
-          if (error || !data) {
-            lastError = getAIErrorMessage(error);
-            continue;
-          }
-
-          if (data.action === 'end_game') {
-            aiError.value = AI_END_GAME_MESSAGE;
-            return false;
-          }
-
-          if (data.action !== 'move') {
-            lastError = AI_INVALID_RESPONSE_ERROR;
-            continue;
-          }
-
-          if (!data.vertex) {
-            lastError = AI_INVALID_MOVE_ERROR;
-            continue;
-          }
-
-          let success = false;
-          try {
-            success = boardRef.value?.play(data.vertex) ?? false;
-          }
-          catch {
-            success = false;
-          }
-
-          if (!success) {
-            lastError = AI_INVALID_MOVE_ERROR;
-            continue;
-          }
-
-          return true;
-        }
-        catch (error) {
-          lastError = getAIErrorMessage(error);
-        }
-      }
-
-      if (requestId === aiRequestId) {
-        aiError.value = lastError;
-      }
-
-      return false;
-    }
-    finally {
-      if (requestId === aiRequestId) {
-        isAIThinking.value = false;
-      }
-    }
-  }
-
-  async function handleRetryAI(): Promise<boolean> {
-    if (snapshot.value) {
-      return triggerAI(snapshot.value);
-    }
-    return false;
-  }
-
+  /** 停一手：推进当前回合，轮到白方时交由 AI 继续落子。 */
   async function handlePass() {
-    if (boardRef.value?.play()) {
-      await nextTick();
-      // 停一手后轮到白方时触发 AI 落子
-      if (currentPlayer.value === -1) {
-        handleRetryAI();
-      }
-    };
+    if (!boardRef.value?.play()) {
+      return;
+    }
+
+    await nextTick();
+
+    if (aiEnabled.value && currentPlayer.value === -1) {
+      await retryAI();
+    }
   }
 
-  function handleNewGame(size: BoardSize) {
-    aiRequestId++;
-    boardRef.value?.reset({ size });
-    isAIThinking.value = false;
-    clearAIError();
+  /** 按当前棋盘尺寸开始新局。 */
+  function handleNewGame() {
+    cancel();
+    boardRef.value?.reset({ size: boardSize.value });
     snapshot.value = null;
   }
 
   return {
+    boardSize,
     aiEnabled,
     isAIThinking,
     aiError,
     currentPlayer,
     initGame,
+    retryAI,
+    toggleAI,
     onMove,
     onUpdate,
-    triggerAI,
-    handleRetryAI,
     handlePass,
     handleNewGame,
   };
