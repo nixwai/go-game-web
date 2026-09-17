@@ -10,7 +10,7 @@ export default antfu(
   {
     files: ['**/*.vue'],
     rules: {
-      'vue/max-attributes-per-line': ['error', { singleline: 5, multiline: { max: 1 } }],
+      'vue/max-attributes-per-line': ['error', { singleline: { max: 2 }, multiline: { max: 1 } }],
       'vue/html-self-closing': ['error', {
         html: { void: 'never', normal: 'always', component: 'always' },
         svg: 'always',

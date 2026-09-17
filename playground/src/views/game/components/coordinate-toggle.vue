@@ -4,9 +4,9 @@ const coord = defineModel<boolean>('coord', { required: true });
 </script>
 
 <template>
-  <div class="preference-row flex gap-3 items-center justify-between">
+  <div class="flex gap-3 items-center justify-between">
     <div class="flex flex-col gap-0.75">
-      <span class="preference-label text-md font-[700] text-mc-ink-950">显示坐标</span>
+      <span class="text-md font-[700] text-mc-ink-950">显示坐标</span>
       <small class="text-xs text-mc-neutral-380">辅助定位落子位置</small>
     </div>
     <button

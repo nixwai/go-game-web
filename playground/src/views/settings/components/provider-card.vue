@@ -42,10 +42,19 @@ interface Emits {
       </div>
     </div>
     <div v-if="!provider.is_default" class="flex gap-1.5">
-      <button class="min-h-7.25 px-2.25 text-sm font-[700] text-mc-sage-680 cursor-pointer bg-mc-paper-50 border border-mc-sage-600/16 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-sage-600" type="button" @click="emit('edit')">
+      <button
+        class="min-h-7.25 px-2.25 text-sm font-[700] text-mc-sage-680 cursor-pointer bg-mc-paper-50 border border-mc-sage-600/16 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-sage-600"
+        type="button"
+        @click="emit('edit')"
+      >
         编辑
       </button>
-      <button class="min-h-7.25 px-2.25 text-sm font-[700] !text-mc-danger-600 cursor-pointer bg-mc-paper-50 border border-mc-danger-600/18 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-danger-600 disabled:!cursor-not-allowed disabled:!opacity-[0.45]" type="button" :disabled="deleting" @click="emit('delete')">
+      <button
+        class="min-h-7.25 px-2.25 text-sm font-[700] !text-mc-danger-600 cursor-pointer bg-mc-paper-50 border border-mc-danger-600/18 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-danger-600 disabled:!cursor-not-allowed disabled:!opacity-[0.45]"
+        type="button"
+        :disabled="deleting"
+        @click="emit('delete')"
+      >
         {{ deleting ? '删除中...' : '删除' }}
       </button>
     </div>

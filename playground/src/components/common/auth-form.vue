@@ -75,10 +75,18 @@ function handleReset() {
         >
       </label>
       <div class="flex gap-2 mt-1.75">
-        <button class="inline-flex flex-1 items-center justify-between min-h-10 px-3.75 text-base font-[750] text-mc-paper-50 cursor-pointer bg-mc-sage-600 border-0 rounded-lg shadow-float hover:bg-mc-sage-680 disabled:cursor-not-allowed disabled:opacity-50" type="submit" :disabled="props.loading">
+        <button
+          class="inline-flex flex-1 items-center justify-between min-h-10 px-3.75 text-base font-[750] text-mc-paper-50 cursor-pointer bg-mc-sage-600 border-0 rounded-lg shadow-float hover:bg-mc-sage-680 disabled:cursor-not-allowed disabled:opacity-50"
+          type="submit"
+          :disabled="props.loading"
+        >
           {{ props.loading ? '处理中...' : buttonText }} <span aria-hidden="true">→</span>
         </button>
-        <button class="min-h-10 px-3.5 text-base font-[750] text-mc-neutral-500 cursor-pointer bg-mc-paper-125 border-0 rounded-lg hover:text-mc-ink-950" type="button" @click="handleReset">
+        <button
+          class="min-h-10 px-3.5 text-base font-[750] text-mc-neutral-500 cursor-pointer bg-mc-paper-125 border-0 rounded-lg hover:text-mc-ink-950"
+          type="button"
+          @click="handleReset"
+        >
           重置
         </button>
       </div>

@@ -8,8 +8,8 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
 </script>
 
 <template>
-  <div class="auth-page grid place-items-center min-h-[calc(100vh-76px)] px-6 py-10">
-    <div class="auth-layout grid grid-cols-[370px_390px] gap-[90px] items-center w-layout">
+  <div class="grid place-items-center min-h-[calc(100vh-76px)] px-6 py-10">
+    <div class="grid grid-cols-[370px_390px] gap-[90px] items-center w-layout">
       <div class="pb-10">
         <p class="m-0 mb-3.75 text-xs font-[800] text-mc-sage-600 tracking-[0.15em]">
           A DIFFERENT KIND OF PLAY
@@ -25,14 +25,26 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
         </div>
       </div>
       <div class="w-full">
-        <p v-if="errorMsg" class="px-3 py-2.5 mb-2.5 text-base text-mc-danger-600 bg-mc-danger-150 rounded-md" role="alert">
+        <p
+          v-if="errorMsg"
+          class="px-3 py-2.5 mb-2.5 text-base text-mc-danger-600 bg-mc-danger-150 rounded-md"
+          role="alert"
+        >
           {{ errorMsg }}
         </p>
         <div v-else class="h-12" />
-        <AuthForm mode="login" :loading="loading" @submit="handleSubmit" />
+        <AuthForm
+          mode="login"
+          :loading="loading"
+          @submit="handleSubmit"
+        />
         <p class="mt-3.5 text-base text-mc-neutral-500 text-center">
           还没有账号？
-          <button class="p-0 text-mc-inherit font-[750] text-mc-sage-680 cursor-pointer bg-mc-transparent border-0 hover:underline" type="button" @click="toRegister">
+          <button
+            class="p-0 text-mc-inherit font-[750] text-mc-sage-680 cursor-pointer bg-mc-transparent border-0 hover:underline"
+            type="button"
+            @click="toRegister"
+          >
             前往注册
           </button>
         </p>

@@ -51,9 +51,9 @@ async function onModelChange(event: Event) {
 </script>
 
 <template>
-  <div class="model-selector flex flex-col gap-3">
-    <div class="ai-row flex gap-2 items-center justify-between">
-      <div class="ai-identity flex gap-2.25 items-center">
+  <div class="flex flex-col gap-3">
+    <div class="flex gap-2 items-center justify-between">
+      <div class="flex gap-2.25 items-center">
         <span class="grid place-items-center w-7.25 h-7.25 text-lg text-mc-sage-600 bg-mc-sage-100 rounded-md" aria-hidden="true">✦</span>
         <div class="flex flex-col gap-0.5">
           <strong class="text-md font-[750] text-mc-ink-950">智能对手</strong>
@@ -61,7 +61,7 @@ async function onModelChange(event: Event) {
         </div>
       </div>
       <button
-        class="ai-toggle inline-flex gap-1.25 items-center min-h-7.25 px-2 text-xs font-[750] cursor-pointer border rounded-sm"
+        class="inline-flex gap-1.25 items-center min-h-7.25 px-2 text-xs font-[750] cursor-pointer border rounded-sm"
         :class="aiEnabled ? '!text-mc-sage-680 !bg-mc-sage-100 !border-mc-transparent' : 'text-mc-neutral-380 bg-mc-paper-50 border-mc-sage-600/16'"
         type="button"
         :aria-pressed="aiEnabled"
@@ -70,16 +70,25 @@ async function onModelChange(event: Event) {
         <span class="w-1.5 h-1.5 rounded-full" :class="aiEnabled ? 'bg-mc-sage-450' : 'bg-mc-neutral-300'" />{{ aiEnabled ? '开启' : '关闭' }}
       </button>
     </div>
-    <label v-if="aiEnabled" class="model-field flex flex-col gap-1.25 text-xs font-[650] text-mc-neutral-380">
+    <label v-if="aiEnabled" class="flex flex-col gap-1.25 text-xs font-[650] text-mc-neutral-380">
       <span>使用模型</span>
-      <select class="w-full min-h-8.75 px-2.25 text-sm font-[650] text-mc-ink-950 outline-none bg-mc-paper-50 border border-mc-sage-600/18 rounded-md focus:border-mc-sage-600 focus:shadow-focus" :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
-        <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
+      <select
+        class="w-full min-h-8.75 px-2.25 text-sm font-[650] text-mc-ink-950 outline-none bg-mc-paper-50 border border-mc-sage-600/18 rounded-md focus:border-mc-sage-600 focus:shadow-focus"
+        :value="selectedModelId"
+        aria-label="选择 AI 模型"
+        @change="onModelChange"
+      >
+        <option
+          v-for="opt in modelOptions"
+          :key="opt.value"
+          :value="opt.value"
+        >
           {{ opt.label }}
         </option>
       </select>
     </label>
-    <p v-if="isAIThinking" class="thinking-label flex gap-1.5 items-center m-0 text-xs font-[700] text-mc-ochre-550">
-      <span class="thinking-spinner w-2.25 h-2.25 border-2 border-mc-ochre-450/25 border-t-mc-ochre-600 rounded-full animate-spin" />AI 正在分析局面...
+    <p v-if="isAIThinking" class="flex gap-1.5 items-center m-0 text-xs font-[700] text-mc-ochre-550">
+      <span class="w-2.25 h-2.25 border-2 border-mc-ochre-450/25 border-t-mc-ochre-600 rounded-full animate-spin" />AI 正在分析局面...
     </p>
   </div>
 </template>

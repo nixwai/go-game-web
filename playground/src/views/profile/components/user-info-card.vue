@@ -15,8 +15,8 @@ const createdTime = computed(() => user.value.created_at ? formatDate(user.value
 </script>
 
 <template>
-  <section class="user-card p-5.5 bg-mc-paper-125/62 border border-mc-neutral-200/72 rounded-3xl" aria-label="账号信息">
-    <div class="user-summary flex gap-4 items-center pb-5 border-b border-mc-sage-600/13">
+  <section class="p-5.5 bg-mc-paper-125/62 border border-mc-neutral-200/72 rounded-3xl" aria-label="账号信息">
+    <div class="flex gap-4 items-center pb-5 border-b border-mc-sage-600/13">
       <span class="grid place-items-center w-14 h-14 text-3xl font-[800] text-mc-paper-50 bg-mc-sage-600 rounded-3xl" aria-hidden="true">
         {{ userInitial }}
       </span>
@@ -33,8 +33,8 @@ const createdTime = computed(() => user.value.created_at ? formatDate(user.value
       </div>
     </div>
 
-    <dl class="user-detail grid grid-cols-[repeat(2,minmax(0,1fr))] gap-3 mt-5">
-      <div class="detail-item p-3.5 bg-mc-paper-50 rounded-xl">
+    <dl class="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-3 mt-5">
+      <div class="p-3.5 bg-mc-paper-50 rounded-xl">
         <dt class="mb-1 text-xs font-[650] text-mc-neutral-380">
           用户 ID
         </dt>
@@ -42,7 +42,7 @@ const createdTime = computed(() => user.value.created_at ? formatDate(user.value
           {{ user.id }}
         </dd>
       </div>
-      <div class="detail-item p-3.5 bg-mc-paper-50 rounded-xl">
+      <div class="p-3.5 bg-mc-paper-50 rounded-xl">
         <dt class="mb-1 text-xs font-[650] text-mc-neutral-380">
           账号状态
         </dt>
@@ -50,7 +50,7 @@ const createdTime = computed(() => user.value.created_at ? formatDate(user.value
           {{ statusText }}
         </dd>
       </div>
-      <div class="detail-item col-span-2 p-3.5 bg-mc-paper-50 rounded-xl">
+      <div class="col-span-2 p-3.5 bg-mc-paper-50 rounded-xl">
         <dt class="mb-1 text-xs font-[650] text-mc-neutral-380">
           注册时间
         </dt>

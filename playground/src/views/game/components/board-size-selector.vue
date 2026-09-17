@@ -16,9 +16,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="preference-row flex gap-3 items-center justify-between">
+  <div class="flex gap-3 items-center justify-between">
     <div class="flex flex-col gap-0.75">
-      <span class="preference-label text-md font-[700] text-mc-ink-950">棋盘尺寸</span>
+      <span class="text-md font-[700] text-mc-ink-950">棋盘尺寸</span>
       <small class="text-xs text-mc-neutral-380">选择你的对弈规格</small>
     </div>
     <select
@@ -28,7 +28,11 @@ const emit = defineEmits<{
       aria-label="选择棋盘尺寸"
       @change="emit('update:boardSize', Number(($event.target as HTMLSelectElement).value) as BoardSize)"
     >
-      <option v-for="opt in BOARD_SIZE_OPTIONS" :key="opt.value" :value="opt.value">
+      <option
+        v-for="opt in BOARD_SIZE_OPTIONS"
+        :key="opt.value"
+        :value="opt.value"
+      >
         {{ opt.label }}
       </option>
     </select>

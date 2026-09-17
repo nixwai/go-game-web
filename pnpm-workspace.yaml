@@ -1,4 +1,9 @@
 minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - '@go-board/design@0.4.0'
+  - '@go-board/tool@0.4.0'
+  - '@go-board/ui@0.4.0'
+
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 1440
 shellEmulator: true
