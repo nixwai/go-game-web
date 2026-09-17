@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import RequestErrorToast from '@/components/common/request-error-toast.vue';
 import { useRouterPush } from '@/hooks/common/router';
 import { useAuthStore } from '@/store/modules/auth';
 
+/** 需要保持状态的视图组件名，与视图内 defineOptions 的 name 一致。 */
+const CACHED_VIEWS = ['GameView'];
+
 const authStore = useAuthStore();
 const { toGame, toSettings, toProfile, toLogin } = useRouterPush(false);
+/** 变更后重建 KeepAlive，清空已缓存的对局。 */
+const keepAliveKey = ref(0);
 
 async function handleLogout() {
   await authStore.resetStore();
+  keepAliveKey.value += 1;
   await toLogin();
 }
 </script>
@@ -43,7 +50,11 @@ async function handleLogout() {
       </nav>
     </header>
     <main class="flex-1 min-h-[calc(100vh-76px)]">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <KeepAlive :key="keepAliveKey" :include="CACHED_VIEWS">
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </main>
     <footer class="flex gap-2 items-center justify-center pt-4.5 px-5 pb-5.5 text-base text-mc-neutral-380" aria-label="源码链接">
       <a class="text-mc-inherit no-underline transition-colors hover:text-mc-sage-680 hover:underline" href="https://github.com/nixwai/go-game-server" target="_blank" rel="noreferrer">
