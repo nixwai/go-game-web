@@ -2,6 +2,7 @@ import type { ProviderDialogOpenOptions, ProviderFormModel } from '../typings';
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
+/** 管理 AI 产商表单弹窗的打开、关闭与提交。 */
 export function useProviderSubmit() {
   const aiStore = useAIStore();
   const loading = ref(false);
@@ -18,6 +19,7 @@ export function useProviderSubmit() {
     formModel.value = createDefaultFormModel();
   }
 
+  /** 打开弹窗并初始化表单。 */
   function open(options: ProviderDialogOpenOptions = {}) {
     resetForm();
 

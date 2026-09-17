@@ -2,6 +2,7 @@ import type { ModelDialogOpenOptions, ModelFormModel } from '../typings';
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
+/** 管理 AI 模型表单弹窗的打开、关闭与提交。 */
 export function useModelSubmit() {
   const aiStore = useAIStore();
   const loading = ref(false);
@@ -18,6 +19,7 @@ export function useModelSubmit() {
     formModel.value = createDefaultFormModel(0);
   }
 
+  /** 打开弹窗并初始化表单。 */
   function open(options: ModelDialogOpenOptions) {
     resetForm();
     formModel.value = { provider_id: options.providerId, model_name: '' };

@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
 
+/** 认证表单的输入值。 */
 interface AuthFormModel {
   username: string
   password: string
 }
 
+/** 认证表单的属性。 */
 interface Props {
+  /** 表单所处的流程。 */
   mode: 'login' | 'register'
+  /** 是否正在提交。 */
   loading?: boolean
 }
 
+/** 认证表单触发的事件。 */
 interface Emits {
+  /** 提交表单时触发。 */
   (e: 'submit', model: AuthFormModel): void
 }
 
@@ -35,13 +41,13 @@ function handleReset() {
 <template>
   <div class="auth-form">
     <div class="auth-brand-mark" aria-hidden="true">
-      <i /><i /><i />
+      <i /><i /><i class="col-[1/span_2] justify-self-center" />
     </div>
     <p class="auth-eyebrow">
       AI GO / QUIET FOCUS
     </p>
     <h1>{{ title }}</h1>
-    <form class="auth-fields" @submit.prevent="handleSubmit">
+    <form class="auth-fields flex flex-col gap-[15px]" @submit.prevent="handleSubmit">
       <label class="auth-field">
         <span>用户名</span>
         <input
@@ -62,11 +68,11 @@ function handleReset() {
           :autocomplete="isLogin ? 'current-password' : 'new-password'"
         >
       </label>
-      <div class="auth-actions">
+      <div class="auth-actions flex gap-[8px] mt-[7px]">
         <button class="submit-button" type="submit" :disabled="props.loading">
           {{ props.loading ? '处理中...' : buttonText }} <span aria-hidden="true">→</span>
         </button>
-        <button class="reset-button" type="button" @click="handleReset">
+        <button class="reset-button text-[var(--muted)] bg-[var(--paper-deep)] hover:text-[var(--ink)]" type="button" @click="handleReset">
           重置
         </button>
       </div>
@@ -105,11 +111,6 @@ function handleReset() {
   border-radius: 50%;
 }
 
-.auth-brand-mark i:last-child {
-  grid-column: 1 / span 2;
-  justify-self: center;
-}
-
 .auth-eyebrow {
   margin: 0 0 8px;
   font-size: 10px;
@@ -124,12 +125,6 @@ h1 {
   font-weight: 780;
   color: var(--ink);
   letter-spacing: -0.06em;
-}
-
-.auth-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 .auth-field {
@@ -162,12 +157,6 @@ h1 {
   box-shadow: 0 0 0 3px rgb(65 104 78 / 10%);
 }
 
-.auth-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 7px;
-}
-
 .submit-button,
 .reset-button {
   min-height: 40px;
@@ -197,14 +186,5 @@ h1 {
 
 .submit-button:hover:not(:disabled) {
   background: var(--sage-dark);
-}
-
-.reset-button {
-  color: var(--muted);
-  background: var(--paper-deep);
-}
-
-.reset-button:hover {
-  color: var(--ink);
 }
 </style>

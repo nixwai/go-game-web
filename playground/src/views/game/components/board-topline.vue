@@ -1,9 +1,9 @@
 <template>
   <div class="board-topline">
     <div class="player-pair">
-      <span class="player-badge"><i class="stone-dot black" />你 · 黑方</span>
-      <span class="versus">VS</span>
-      <span class="player-badge"><i class="stone-dot white" />AI · 白方</span>
+      <span class="player-badge inline-flex gap-[6px] items-center"><i class="stone-dot black inline-block w-[11px] h-[11px] rounded-[50%] bg-[#1c1d1a] shadow-[1px_1px_2px_rgb(0_0_0_/_24%)]" />你 · 黑方</span>
+      <span class="versus text-[10px] font-[800] text-[var(--soft-muted)] tracking-[0.08em]">VS</span>
+      <span class="player-badge inline-flex gap-[6px] items-center"><i class="stone-dot white inline-block w-[11px] h-[11px] rounded-[50%] bg-[#fff] [border:1px_solid_#c8c8c0] shadow-[1px_1px_2px_rgb(0_0_0_/_12%)]" />AI · 白方</span>
     </div>
     <span class="status-pill">
       <i />对弈进行中
@@ -28,37 +28,6 @@
   font-size: 12px;
   font-weight: 650;
   color: var(--muted);
-}
-
-.player-badge {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.versus {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--soft-muted);
-  letter-spacing: 0.08em;
-}
-
-.stone-dot {
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-}
-
-.stone-dot.black {
-  background: #1c1d1a;
-  box-shadow: 1px 1px 2px rgb(0 0 0 / 24%);
-}
-
-.stone-dot.white {
-  background: #fff;
-  border: 1px solid #c8c8c0;
-  box-shadow: 1px 1px 2px rgb(0 0 0 / 12%);
 }
 
 .status-pill {

@@ -1,3 +1,4 @@
+/** 认证表单字段的校验配置。 */
 export interface AuthFormField {
   key: 'username' | 'password'
   label: string
@@ -11,6 +12,7 @@ export interface AuthFormField {
   }[]
 }
 
+/** 登录与注册共用的表单字段配置。 */
 export const formFields: AuthFormField[] = [
   {
     key: 'username',
@@ -32,6 +34,7 @@ export const formFields: AuthFormField[] = [
   },
 ];
 
+/** 校验单个字段，返回首条错误信息。 */
 export function validateField(key: 'username' | 'password', value: string): string | null {
   const field = formFields.find(f => f.key === key);
   if (!field) {
@@ -56,6 +59,7 @@ export function validateField(key: 'username' | 'password', value: string): stri
   return null;
 }
 
+/** 校验表单所有字段，返回字段名到错误信息的映射。 */
 export function validateForm(model: { username: string, password: string }): Record<string, string> {
   const errors: Record<string, string> = {};
 

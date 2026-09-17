@@ -2,8 +2,8 @@
 </script>
 
 <template>
-  <aside class="game-sidebar" aria-label="对局设置">
-    <div class="sidebar-header">
+  <aside class="game-sidebar p-[22px] [background:rgb(246_243_234_/_82%)] [border:1px_solid_rgb(213_211_198_/_80%)] rounded-[20px]" aria-label="对局设置">
+    <div class="sidebar-header flex items-start justify-between mb-[22px]">
       <div>
         <p class="panel-kicker">
           MATCH CONTROL
@@ -16,23 +16,23 @@
     <section class="control-section status-section">
       <div class="section-title">
         <span>当前对局</span>
-        <span class="section-line" />
+        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
       </div>
       <slot name="status" />
     </section>
 
-    <section class="control-section">
+    <section class="control-section mt-[20px]">
       <div class="section-title">
         <span>AI 对手</span>
-        <span class="section-line" />
+        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
       </div>
       <slot name="ai" />
     </section>
 
-    <section class="control-section">
+    <section class="control-section mt-[20px]">
       <div class="section-title">
         <span>棋盘偏好</span>
-        <span class="section-line" />
+        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
       </div>
       <slot name="controls" />
     </section>
@@ -40,20 +40,6 @@
 </template>
 
 <style scoped>
-.game-sidebar {
-  padding: 22px;
-  background: rgb(246 243 234 / 82%);
-  border: 1px solid rgb(213 211 198 / 80%);
-  border-radius: 20px;
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 22px;
-}
-
 .panel-kicker {
   margin: 0 0 5px;
   font-size: 9px;
@@ -81,10 +67,6 @@ h2 {
   border-radius: 9px;
 }
 
-.control-section + .control-section {
-  margin-top: 20px;
-}
-
 .section-title {
   display: flex;
   gap: 9px;
@@ -95,11 +77,5 @@ h2 {
   color: var(--soft-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-}
-
-.section-line {
-  flex: 1;
-  height: 1px;
-  background: rgb(65 104 78 / 13%);
 }
 </style>

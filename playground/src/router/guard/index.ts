@@ -3,6 +3,7 @@ import type { Router } from 'vue-router';
 import { useAuthStore } from '@/store/modules/auth';
 import { localStg } from '@/utils/storage';
 
+/** 注册认证与标题守卫。 */
 export function createRouterGuard(router: Router) {
   createAuthGuard(router);
   createTitleGuard(router);

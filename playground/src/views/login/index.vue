@@ -8,27 +8,27 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
 </script>
 
 <template>
-  <div class="auth-page">
+  <div class="auth-page grid place-items-center min-h-[calc(100vh-76px)] p-[40px_24px]">
     <div class="auth-layout">
-      <div class="auth-intro">
+      <div class="auth-intro pb-[40px]">
         <p class="intro-kicker">
           A DIFFERENT KIND OF PLAY
         </p>
         <h2>一手一世界</h2>
         <p>把每一次落子留给当下的判断</p>
         <div class="intro-line">
-          <span />专注 · 平静 · 持续
+          <span class="w-[7px] h-[7px] bg-[var(--sage)] rounded-[50%]" />专注 · 平静 · 持续
         </div>
       </div>
-      <div class="auth-column">
+      <div class="auth-column w-full">
         <p v-if="errorMsg" class="error-message" role="alert">
           {{ errorMsg }}
         </p>
         <div v-else class="h-48px" />
         <AuthForm mode="login" :loading="loading" @submit="handleSubmit" />
-        <p class="auth-switch">
+        <p class="auth-switch mt-[14px] text-[12px] text-[var(--muted)] text-center">
           还没有账号？
-          <button type="button" @click="toRegister">
+          <button class="hover:underline" type="button" @click="toRegister">
             前往注册
           </button>
         </p>
@@ -38,23 +38,12 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
 </template>
 
 <style scoped>
-.auth-page {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 76px);
-  padding: 40px 24px;
-}
-
 .auth-layout {
   display: grid;
   grid-template-columns: 370px 390px;
   gap: 90px;
   align-items: center;
   width: 820px;
-}
-
-.auth-intro {
-  padding-bottom: 40px;
 }
 
 .intro-kicker {
@@ -91,17 +80,6 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
   color: var(--soft-muted);
 }
 
-.intro-line span {
-  width: 7px;
-  height: 7px;
-  background: var(--sage);
-  border-radius: 50%;
-}
-
-.auth-column {
-  width: 100%;
-}
-
 .error-message {
   padding: 10px 12px;
   margin: 0 0 10px;
@@ -109,13 +87,6 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
   color: var(--danger);
   background: #f4e4df;
   border-radius: 9px;
-}
-
-.auth-switch {
-  margin: 14px 0 0;
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
 }
 
 .auth-switch button {
@@ -126,9 +97,5 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
   cursor: pointer;
   background: transparent;
   border: 0;
-}
-
-.auth-switch button:hover {
-  text-decoration: underline;
 }
 </style>

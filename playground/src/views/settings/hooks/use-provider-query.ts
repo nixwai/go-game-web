@@ -2,6 +2,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
+/** 加载并暴露 AI 产商列表。 */
 export function useProviderQuery() {
   const aiStore = useAIStore();
   const { providers } = storeToRefs(aiStore);

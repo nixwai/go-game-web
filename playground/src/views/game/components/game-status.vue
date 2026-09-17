@@ -3,13 +3,18 @@ import { computed } from 'vue';
 import { formatPlayer } from '@/utils/format';
 
 const props = defineProps<{
+  /** 当前执棋方。 */
   currentPlayer: -1 | 1
+  /** 双方已落子的手数。 */
   moveCount: number
+  /** AI 是否正在思考。 */
   isAIThinking: boolean
+  /** AI 调用失败时的提示。 */
   aiError: string
 }>();
 
 defineEmits<{
+  /** 请求重新发起上一次 AI 落子。 */
   (e: 'retry'): void
 }>();
 
@@ -18,19 +23,19 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 </script>
 
 <template>
-  <div class="game-status">
+  <div class="game-status flex flex-col gap-[9px]">
     <div class="turn-card">
-      <div class="turn-stone" :class="{ white: !playerIsBlack }" aria-hidden="true" />
-      <div class="turn-copy">
-        <span>当前执棋</span>
-        <strong>{{ playerText }}</strong>
+      <div class="turn-stone" :class="{ 'white': !playerIsBlack, '!bg-[radial-gradient(circle_at_35%_30%,#fff,#d8d8d0_70%)]': !playerIsBlack, '[border:1px_solid_#c2c4bc]': !playerIsBlack }" aria-hidden="true" />
+      <div class="turn-copy flex flex-1 flex-col gap-[2px]">
+        <span class="text-[10px] font-[650] text-[var(--soft-muted)]">当前执棋</span>
+        <strong class="text-[14px] font-[780] text-[var(--ink)]">{{ playerText }}</strong>
       </div>
-      <span class="turn-arrow" aria-hidden="true">↗</span>
+      <span class="turn-arrow text-[17px] font-[700] text-[var(--sage)]" aria-hidden="true">↗</span>
     </div>
-    <div class="status-grid">
+    <div class="status-grid grid grid-cols-[1fr] gap-[9px]">
       <div class="mini-stat">
-        <span>手数</span>
-        <strong>{{ props.moveCount }}</strong>
+        <span class="text-[10px] font-[650] text-[var(--soft-muted)]">手数</span>
+        <strong class="text-[14px] font-[780] text-[var(--ink)]">{{ props.moveCount }}</strong>
       </div>
     </div>
     <div
@@ -38,15 +43,17 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
       :class="{
         'thinking': props.isAIThinking && !props.aiError,
         'ai-error': Boolean(props.aiError),
+        '!items-start !text-[var(--danger)] !bg-[#f4e4df]': Boolean(props.aiError),
+        '!text-[#8d6b2c] !bg-[#f5eacd]': props.isAIThinking && !props.aiError,
       }"
       :role="props.aiError ? 'alert' : undefined"
       :aria-live="props.aiError ? 'assertive' : undefined"
     >
-      <i />
-      <span class="status-copy">
+      <i class="w-[6px] h-[6px] bg-[#589066] rounded-[50%]" :class="{ 'flex-none mt-[4px] !bg-[var(--danger)]': Boolean(props.aiError), '!bg-[#c49437]': props.isAIThinking && !props.aiError }" />
+      <span class="status-copy flex-1">
         {{ props.aiError || (props.isAIThinking ? 'AI 正在思考下一步' : '对弈中') }}
       </span>
-      <button v-if="props.aiError" class="retry-button" type="button" @click="$emit('retry')">
+      <button v-if="props.aiError" class="retry-button hover:!text-[#fff] hover:!bg-[var(--danger)]" type="button" @click="$emit('retry')">
         重试
       </button>
     </div>
@@ -54,12 +61,6 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 </template>
 
 <style scoped>
-.game-status {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
 .turn-card {
   display: flex;
   gap: 10px;
@@ -78,43 +79,6 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
   box-shadow: 1px 2px 4px rgb(0 0 0 / 23%);
 }
 
-.turn-stone.white {
-  background: radial-gradient(circle at 35% 30%, #fff, #d8d8d0 70%);
-  border: 1px solid #c2c4bc;
-}
-
-.turn-copy {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.turn-copy span,
-.mini-stat span {
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--soft-muted);
-}
-
-.turn-copy strong {
-  font-size: 14px;
-  font-weight: 780;
-  color: var(--ink);
-}
-
-.turn-arrow {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--sage);
-}
-
-.status-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 9px;
-}
-
 .mini-stat {
   display: flex;
   align-items: center;
@@ -122,12 +86,6 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
   padding: 10px;
   background: rgb(255 253 248 / 58%);
   border-radius: 10px;
-}
-
-.mini-stat strong {
-  font-size: 14px;
-  font-weight: 780;
-  color: var(--ink);
 }
 
 .status-message {
@@ -142,16 +100,6 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
   border-radius: 9px;
 }
 
-.status-copy {
-  flex: 1;
-}
-
-.status-message.ai-error {
-  align-items: flex-start;
-  color: var(--danger);
-  background: #f4e4df;
-}
-
 .retry-button {
   flex: 0 0 auto;
   padding: 2px 6px;
@@ -162,32 +110,5 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
   background: transparent;
   border: 1px solid currentcolor;
   border-radius: 6px;
-}
-
-.retry-button:hover {
-  color: #fff;
-  background: var(--danger);
-}
-
-.status-message i {
-  width: 6px;
-  height: 6px;
-  background: #589066;
-  border-radius: 50%;
-}
-
-.status-message.ai-error i {
-  flex: 0 0 auto;
-  margin-top: 4px;
-  background: var(--danger);
-}
-
-.status-message.thinking {
-  color: #8d6b2c;
-  background: #f5eacd;
-}
-
-.status-message.thinking i {
-  background: #c49437;
 }
 </style>

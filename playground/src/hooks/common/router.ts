@@ -2,6 +2,7 @@ import type { RouteLocationRaw } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { router as globalRouter } from '@/router';
 
+/** 提供常用路由跳转方法。 */
 export function useRouterPush(inSetup = true) {
   const router = inSetup ? useRouter() : globalRouter;
   const route = globalRouter.currentRoute;

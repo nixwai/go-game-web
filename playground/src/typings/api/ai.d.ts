@@ -1,5 +1,6 @@
 declare namespace Api {
   namespace Ai {
+    /** AI 模型信息。 */
     interface ModelResponse {
       id: number
       model_name: string
@@ -8,6 +9,7 @@ declare namespace Api {
       created_at?: string
     }
 
+    /** AI 产商信息。 */
     interface ProviderResponse {
       id: number
       provider_name: string
@@ -19,12 +21,14 @@ declare namespace Api {
       created_at?: string
     }
 
+    /** 新增 AI 产商的请求参数。 */
     interface CreateProviderPayload {
       provider_name: string
       base_url: string
       encrypted_api_key: string
     }
 
+    /** 更新 AI 产商的请求参数。 */
     interface UpdateProviderPayload {
       id: number
       provider_name?: string
@@ -33,21 +37,25 @@ declare namespace Api {
       status?: 'active' | 'disabled'
     }
 
+    /** 删除 AI 产商的请求参数。 */
     interface DeleteProviderPayload {
       id: number
     }
 
+    /** 新增 AI 模型的请求参数。 */
     interface CreateModelPayload {
       provider_id: number
       model_name: string
     }
 
+    /** 更新 AI 模型的请求参数。 */
     interface UpdateModelPayload {
       id: number
       model_name?: string
       status?: 'active' | 'disabled'
     }
 
+    /** 删除 AI 模型的请求参数。 */
     interface DeleteModelPayload {
       id: number
     }

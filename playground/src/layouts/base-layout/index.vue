@@ -16,13 +16,13 @@ async function handleLogout() {
   <div class="app-frame">
     <header class="app-header">
       <button class="brand" type="button" aria-label="返回对弈" @click="toGame">
-        <span class="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-        <span class="brand-copy">
-          <strong>AI 围棋</strong>
-          <small>PLAY WITH PURPOSE</small>
+        <span class="brand-mark" aria-hidden="true"><i /><i /><i class="col-[1/span_2] justify-self-center" /></span>
+        <span class="brand-copy flex flex-col gap-[1px]">
+          <strong class="text-[18px] font-[750] tracking-[-0.03em]">AI 围棋</strong>
+          <small class="text-[9px] font-[750] text-[var(--sage)] tracking-[0.16em]">PLAY WITH PURPOSE</small>
         </span>
       </button>
-      <nav v-if="authStore.isLogin" class="app-nav" aria-label="主导航">
+      <nav v-if="authStore.isLogin" class="app-nav flex gap-[6px] items-center mr-[20px]" aria-label="主导航">
         <button class="nav-link" :class="{ active: $route.name === 'game' }" type="button" @click="toGame">
           对弈
         </button>
@@ -38,15 +38,15 @@ async function handleLogout() {
         </button>
       </nav>
     </header>
-    <main class="app-main">
+    <main class="app-main flex-1 min-h-[calc(100vh-76px)]">
       <RouterView />
     </main>
     <footer class="app-footer" aria-label="源码链接">
-      <a href="https://github.com/nixwai/go-game-server" target="_blank" rel="noreferrer">
+      <a class="hover:text-[var(--sage-dark)] hover:underline" href="https://github.com/nixwai/go-game-server" target="_blank" rel="noreferrer">
         服务端源码
       </a>
       <span aria-hidden="true">·</span>
-      <a href="https://github.com/nixwai/go-game-web" target="_blank" rel="noreferrer">
+      <a class="hover:text-[var(--sage-dark)] hover:underline" href="https://github.com/nixwai/go-game-web" target="_blank" rel="noreferrer">
         前端源码
       </a>
     </footer>
@@ -151,37 +151,6 @@ async function handleLogout() {
   border-radius: 50%;
 }
 
-.brand-mark i:last-child {
-  grid-column: 1 / span 2;
-  justify-self: center;
-}
-
-.brand-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.brand-copy strong {
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: -0.03em;
-}
-
-.brand-copy small {
-  font-size: 9px;
-  font-weight: 750;
-  color: var(--sage);
-  letter-spacing: 0.16em;
-}
-
-.app-nav {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-right: 20px;
-}
-
 .nav-link,
 .logout-button {
   padding: 9px 13px;
@@ -240,11 +209,6 @@ async function handleLogout() {
   background: rgb(169 88 77 / 10%);
 }
 
-.app-main {
-  flex: 1;
-  min-height: calc(100vh - 76px);
-}
-
 .app-footer {
   display: flex;
   gap: 8px;
@@ -259,10 +223,5 @@ async function handleLogout() {
   color: inherit;
   text-decoration: none;
   transition: color 160ms ease;
-}
-
-.app-footer a:hover {
-  color: var(--sage-dark);
-  text-decoration: underline;
 }
 </style>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
+/** 是否显示棋盘坐标。 */
 const coord = defineModel<boolean>('coord', { required: true });
 </script>
 
 <template>
-  <div class="preference-row">
-    <div>
-      <span class="preference-label">显示坐标</span>
-      <small>辅助定位落子位置</small>
+  <div class="preference-row flex gap-[12px] items-center justify-between">
+    <div class="flex flex-col gap-[3px]">
+      <span class="preference-label text-[13px] font-[700] text-[var(--ink)]">显示坐标</span>
+      <small class="text-[10px] text-[var(--soft-muted)]">辅助定位落子位置</small>
     </div>
     <button
       class="toggle-control"
@@ -15,36 +16,12 @@ const coord = defineModel<boolean>('coord', { required: true });
       :aria-pressed="coord"
       @click="coord = !coord"
     >
-      <span />{{ coord ? '开启' : '关闭' }}
+      <span class="w-[6px] h-[6px] bg-[#b5b9ae] rounded-[50%]" />{{ coord ? '开启' : '关闭' }}
     </button>
   </div>
 </template>
 
 <style scoped>
-.preference-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.preference-row > div {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.preference-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.preference-row small {
-  font-size: 10px;
-  color: var(--soft-muted);
-}
-
 .toggle-control {
   display: inline-flex;
   gap: 6px;
@@ -59,13 +36,6 @@ const coord = defineModel<boolean>('coord', { required: true });
   background: var(--paper);
   border: 1px solid rgb(65 104 78 / 18%);
   border-radius: 9px;
-}
-
-.toggle-control span {
-  width: 6px;
-  height: 6px;
-  background: #b5b9ae;
-  border-radius: 50%;
 }
 
 .toggle-control.enabled {

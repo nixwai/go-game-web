@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
+/** 提供 AI 产商删除操作。 */
 export function useProviderDelete(callback: () => Promise<void>) {
   const aiStore = useAIStore();
   const deletingId = ref<number | null>(null);

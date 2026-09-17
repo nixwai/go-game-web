@@ -1,7 +1,10 @@
+/** 支持的对局棋盘边长。 */
 export const BOARD_SIZES = [9, 13, 19] as const;
 
+/** 棋盘边长类型。 */
 export type BoardSize = (typeof BOARD_SIZES)[number];
 
+/** 后端业务状态码。 */
 export const BUSINESS_CODE = {
   SUCCESS: 0,
   VALIDATION_FAILED: 1001,
@@ -19,6 +22,8 @@ export const BUSINESS_CODE = {
   LLM_FORMAT_INVALID: 9003,
 } as const;
 
+/** 触发退出登录的业务状态码。 */
 export const LOGOUT_CODES: number[] = [BUSINESS_CODE.TOKEN_INVALID];
 
+/** 本地存储键的统一前缀。 */
 export const STORAGE_PREFIX = 'go_game_';

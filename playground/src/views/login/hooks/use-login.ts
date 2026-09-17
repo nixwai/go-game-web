@@ -3,6 +3,7 @@ import { useRouterPush } from '@/hooks/common/router';
 import { useAuthStore } from '@/store/modules/auth';
 import { validateForm } from '../config/rules';
 
+/** 管理登录表单状态与提交。 */
 export function useLogin() {
   const authStore = useAuthStore();
   const { redirectFromLogin, toRegister } = useRouterPush();

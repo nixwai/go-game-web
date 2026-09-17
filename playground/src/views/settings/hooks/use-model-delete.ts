@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { useAIStore } from '@/store/modules/ai';
 
+/** 提供 AI 模型删除操作。 */
 export function useModelDelete(getTableData: () => Promise<void>) {
   const aiStore = useAIStore();
   const deletingId = ref<number | null>(null);

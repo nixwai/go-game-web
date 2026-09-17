@@ -12,12 +12,14 @@ import {
   fetchUpdateProvider,
 } from '@/service/api';
 
+/** AI 产商与模型的配置状态。 */
 export const useAIStore = defineStore(SetupStoreId.Ai, () => {
   const { encrypt } = useRSA();
 
   const providers = ref<Api.Ai.ProviderResponse[]>([]);
   const loading = ref(false);
 
+  /** 所有启用产商下已启用的模型。 */
   const activeModels = computed<Api.Ai.ModelOption[]>(() => {
     const models: Api.Ai.ModelOption[] = [];
 

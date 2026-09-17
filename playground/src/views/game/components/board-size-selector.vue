@@ -3,20 +3,23 @@ import type { BoardSize } from '@/constants/app';
 import { BOARD_SIZE_OPTIONS } from '../config/constants';
 
 const props = defineProps<{
+  /** 当前棋盘边长。 */
   boardSize: BoardSize
+  /** 是否禁止修改。 */
   disabled: boolean
 }>();
 
 const emit = defineEmits<{
+  /** 棋盘边长变更时触发。 */
   (e: 'update:boardSize', size: BoardSize): void
 }>();
 </script>
 
 <template>
-  <div class="preference-row">
-    <div>
-      <span class="preference-label">棋盘尺寸</span>
-      <small>选择你的对弈规格</small>
+  <div class="preference-row flex gap-[12px] items-center justify-between">
+    <div class="flex flex-col gap-[3px]">
+      <span class="preference-label text-[13px] font-[700] text-[var(--ink)]">棋盘尺寸</span>
+      <small class="text-[10px] text-[var(--soft-muted)]">选择你的对弈规格</small>
     </div>
     <select
       class="select-control"
@@ -33,30 +36,6 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
-.preference-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.preference-row > div {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.preference-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.preference-row small {
-  font-size: 10px;
-  color: var(--soft-muted);
-}
-
 .select-control {
   max-width: 100px;
   min-height: 32px;

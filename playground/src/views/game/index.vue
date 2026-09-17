@@ -21,6 +21,7 @@ const coord = ref(false);
 const history = ref<GoGameOptions[]>([]);
 const aiStore = useAIStore();
 
+/** 当前对局已落子的手数。 */
 const moveCount = computed(() => Math.max(history.value.length - 1, 0));
 
 const {
@@ -36,6 +37,7 @@ const {
   handleNewGame,
 } = useGoGame(boardRef);
 
+/** 开启 AI 后若轮到白方，立即请求 AI 落子。 */
 function handleToggleAI() {
   aiEnabled.value = !aiEnabled.value;
 
@@ -51,17 +53,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="game-view">
+  <div class="game-view px-[20px]">
     <section class="game-shell">
-      <div class="game-layout">
+      <div class="game-layout grid grid-cols-[auto_280px] gap-[46px] items-start">
         <div class="board-column">
           <BoardTopline />
 
           <GoSave v-model:value="history">
-            <div class="board-stage">
+            <div class="board-stage flex justify-center w-full pb-[20px]">
               <GoBoard
                 ref="boardRef"
-                class="game-board"
+                class="game-board !w-[620px] !border-[rgb(128_90_26_/_84%)] !rounded-[20px] !shadow-[0_4px_14px_rgb(90_63_18_/_10%)]"
                 :init="{ size: boardSize }"
                 :show-coord="coord"
                 :disabled="isAIThinking"
@@ -71,14 +73,14 @@ onMounted(async () => {
               />
             </div>
 
-            <div class="history-panel">
+            <div class="history-panel w-[620px] mx-auto mt-[8px]">
               <div class="history-heading">
                 棋局历史
-                <GoHistorySlider :disabled="isAIThinking" class="game-history-slider flex-1" />
+                <GoHistorySlider :disabled="isAIThinking" class="game-history-slider flex-1 [accent-color:var(--sage)]" />
               </div>
-              <div class="history-actions">
+              <div class="history-actions flex gap-[8px] justify-center mt-[13px]">
                 <GoHistoryButton
-                  class="history-action-button"
+                  class="history-action-button [&:not(:disabled):hover]:!text-[#fff] [&:not(:disabled):hover]:!bg-[var(--sage)] [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
                   :step="-1"
                   :disabled="isAIThinking"
                   aria-label="后退一步"
@@ -86,14 +88,14 @@ onMounted(async () => {
                   <span aria-hidden="true">←</span> 后退
                 </GoHistoryButton>
                 <GoHistoryButton
-                  class="history-action-button"
+                  class="history-action-button [&:not(:disabled):hover]:!text-[#fff] [&:not(:disabled):hover]:!bg-[var(--sage)] [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]"
                   :step="1"
                   :disabled="isAIThinking"
                   aria-label="前进一步"
                 >
                   前进 <span aria-hidden="true">→</span>
                 </GoHistoryButton>
-                <button class="history-action-button" type="button" :disabled="isAIThinking" @click="handlePass">
+                <button class="history-action-button [&:not(:disabled):hover]:!text-[#fff] [&:not(:disabled):hover]:!bg-[var(--sage)] [&:not(:disabled):hover]:translate-y-[-1px] disabled:!cursor-not-allowed disabled:!opacity-[0.42]" type="button" :disabled="isAIThinking" @click="handlePass">
                   停一手
                 </button>
               </div>
@@ -119,7 +121,7 @@ onMounted(async () => {
             />
           </template>
           <template #controls>
-            <div class="game-controls">
+            <div class="game-controls flex flex-col gap-[14px]">
               <CoordinateToggle v-model:coord="coord" />
               <BoardSizeSelector v-model:board-size="boardSize" :disabled="isAIThinking" />
               <GameActionButtons @new-game="handleNewGame(boardSize)" />
@@ -132,16 +134,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.game-view {
-  padding: 0 20px;
-}
-
-.game-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .game-shell {
   min-width: 1078px;
   padding: 24px 52px;
@@ -154,32 +146,6 @@ onMounted(async () => {
     0 2px 8px rgb(92 91 69 / 4%);
 }
 
-.game-layout {
-  display: grid;
-  grid-template-columns: auto 280px;
-  gap: 46px;
-  align-items: start;
-}
-
-.board-stage {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding-bottom: 20px;
-}
-
-.game-board {
-  width: 620px !important;
-  border-color: rgb(128 90 26 / 84%);
-  border-radius: 20px;
-  box-shadow: 0 4px 14px rgb(90 63 18 / 10%);
-}
-
-.history-panel {
-  width: 620px;
-  margin: 8px auto 0;
-}
-
 .history-heading {
   display: flex;
   gap: 8px;
@@ -187,17 +153,6 @@ onMounted(async () => {
   font-size: 13px;
   font-weight: 750;
   color: var(--ink);
-}
-
-.game-history-slider {
-  accent-color: var(--sage);
-}
-
-.history-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 13px;
 }
 
 .history-action-button {
@@ -215,16 +170,5 @@ onMounted(async () => {
     background 160ms ease,
     transform 160ms ease,
     opacity 160ms ease;
-}
-
-.history-action-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.42;
-}
-
-.history-action-button:not(:disabled):hover {
-  color: #fff;
-  background: var(--sage);
-  transform: translateY(-1px);
 }
 </style>

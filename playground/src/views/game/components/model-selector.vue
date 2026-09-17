@@ -4,11 +4,14 @@ import { fetchGoGameSetting, fetchUpdateGoGameSetting } from '@/service/api';
 import { useAIStore } from '@/store/modules/ai';
 
 defineProps<{
+  /** AI 自动落子是否开启。 */
   aiEnabled: boolean
+  /** AI 是否正在思考。 */
   isAIThinking: boolean
 }>();
 
 const emit = defineEmits<{
+  /** 切换 AI 自动落子时触发。 */
   (e: 'toggleAI'): void
 }>();
 
@@ -48,28 +51,28 @@ async function onModelChange(event: Event) {
 </script>
 
 <template>
-  <div class="model-selector">
-    <div class="ai-row">
-      <div class="ai-identity">
+  <div class="model-selector flex flex-col gap-[12px]">
+    <div class="ai-row flex gap-[8px] items-center justify-between">
+      <div class="ai-identity flex gap-[9px] items-center">
         <span class="ai-avatar" aria-hidden="true">✦</span>
-        <div>
-          <strong>智能对手</strong>
-          <small>{{ aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
+        <div class="flex flex-col gap-[2px]">
+          <strong class="text-[13px] font-[750] text-[var(--ink)]">智能对手</strong>
+          <small class="text-[10px] text-[var(--soft-muted)]">{{ aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
         </div>
       </div>
       <button
         class="ai-toggle"
-        :class="{ enabled: aiEnabled }"
+        :class="{ 'enabled': aiEnabled, '!text-[var(--sage-dark)] !bg-[var(--sage-soft)] !border-transparent': aiEnabled }"
         type="button"
         :aria-pressed="aiEnabled"
         @click="emit('toggleAI')"
       >
-        <span />{{ aiEnabled ? '开启' : '关闭' }}
+        <span class="w-[6px] h-[6px] rounded-[50%]" :class="aiEnabled ? 'bg-[#589066]' : 'bg-[#b5b9ae]'" />{{ aiEnabled ? '开启' : '关闭' }}
       </button>
     </div>
     <label v-if="aiEnabled" class="model-field">
       <span>使用模型</span>
-      <select :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
+      <select class="focus:!border-[var(--sage)] focus:!shadow-[0_0_0_3px_rgb(65_104_78_/_10%)]" :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
         <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
           {{ opt.label }}
         </option>
@@ -82,25 +85,6 @@ async function onModelChange(event: Event) {
 </template>
 
 <style scoped>
-.model-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.ai-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.ai-identity {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-}
-
 .ai-avatar {
   display: grid;
   place-items: center;
@@ -110,23 +94,6 @@ async function onModelChange(event: Event) {
   color: var(--sage);
   background: var(--sage-soft);
   border-radius: 9px;
-}
-
-.ai-identity > div {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.ai-identity strong {
-  font-size: 13px;
-  font-weight: 750;
-  color: var(--ink);
-}
-
-.ai-identity small {
-  font-size: 10px;
-  color: var(--soft-muted);
 }
 
 .ai-toggle {
@@ -142,23 +109,6 @@ async function onModelChange(event: Event) {
   background: var(--paper);
   border: 1px solid rgb(65 104 78 / 16%);
   border-radius: 8px;
-}
-
-.ai-toggle span {
-  width: 6px;
-  height: 6px;
-  background: #b5b9ae;
-  border-radius: 50%;
-}
-
-.ai-toggle.enabled {
-  color: var(--sage-dark);
-  background: var(--sage-soft);
-  border-color: transparent;
-}
-
-.ai-toggle.enabled span {
-  background: #589066;
 }
 
 .model-field {
@@ -181,11 +131,6 @@ async function onModelChange(event: Event) {
   background: var(--paper);
   border: 1px solid rgb(65 104 78 / 18%);
   border-radius: 9px;
-}
-
-.model-field select:focus {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgb(65 104 78 / 10%);
 }
 
 .thinking-label {

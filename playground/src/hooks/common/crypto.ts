@@ -4,6 +4,7 @@ import { encryptWithRSA, importRSAPublicKey } from '@/utils/crypto';
 
 let cachedKey: CryptoKey | null = null;
 
+/** 提供公钥获取与 RSA 加密能力。 */
 export function useRSA() {
   const loading = ref(false);
 

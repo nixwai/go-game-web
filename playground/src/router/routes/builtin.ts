@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+/** 应用内置页面路由。 */
 export const builtinRoutes: RouteRecordRaw[] = [
   {
     path: '/login',

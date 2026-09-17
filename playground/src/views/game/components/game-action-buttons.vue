@@ -1,25 +1,19 @@
 <script setup lang="ts">
 const emit = defineEmits<{
+  /** 开始新对局时触发。 */
   (e: 'newGame'): void
 }>();
 </script>
 
 <template>
-  <div class="action-grid">
-    <button class="action-button primary" type="button" @click="emit('newGame')">
+  <div class="action-grid grid grid-cols-[1fr] gap-[8px] pt-[3px]">
+    <button class="action-button primary text-[#fffdf8] bg-[var(--sage)] shadow-[0_7px_14px_rgb(65_104_78_/_18%)] hover:bg-[var(--sage-dark)]" type="button" @click="emit('newGame')">
       <span aria-hidden="true">＋</span> 新局
     </button>
   </div>
 </template>
 
 <style scoped>
-.action-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  padding-top: 3px;
-}
-
 .action-button {
   min-height: 38px;
   padding: 0 9px;
@@ -37,15 +31,5 @@ const emit = defineEmits<{
 
 .action-button:active {
   transform: translateY(1px);
-}
-
-.action-button.primary {
-  color: #fffdf8;
-  background: var(--sage);
-  box-shadow: 0 7px 14px rgb(65 104 78 / 18%);
-}
-
-.action-button.primary:hover {
-  background: var(--sage-dark);
 }
 </style>

@@ -15,6 +15,7 @@ const instance = axios.create({
   timeout: 150000,
 });
 
+/** 请求错误的全局提示状态。 */
 export const requestState = reactive<RequestInstanceState>({ errMsgStack: [], errorMessage: '' });
 
 function toMessage(value: unknown, fallback: string): string {
@@ -113,6 +114,7 @@ async function flatRequest<T>(config: AxiosRequestConfig): Promise<FlatRequestRe
   }
 }
 
+/** 发起请求并返回数据与错误的扁平结果。 */
 export const request = {
   get: <T>(config: AxiosRequestConfig) => flatRequest<T>({ ...config, method: 'get' }),
   post: <T>(config: AxiosRequestConfig) => flatRequest<T>({ ...config, method: 'post' }),

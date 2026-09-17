@@ -10,6 +10,7 @@ const AI_END_GAME_MESSAGE = 'AI申请结束';
 const AI_REQUEST_ERROR = 'AI 请求失败，请重试';
 const AI_MAX_RETRIES = 10;
 
+/** 提取错误中的提示，无法识别时返回默认文案。 */
 export function getAIErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim()) {
     return error.message.trim();
@@ -22,11 +23,13 @@ export function getAIErrorMessage(error: unknown): string {
   return AI_REQUEST_ERROR;
 }
 
+/** 管理对局状态、AI 落子调度与重试。 */
 export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
   const aiEnabled = ref(true);
   const isAIThinking = ref(false);
   const aiError = ref('');
   const snapshot = shallowRef<GoGameSnapshot | null>(null);
+  /** 递增后使进行中的旧请求结果失效。 */
   let aiRequestId = 0;
 
   const currentPlayer = computed(() => snapshot.value?.player ?? 1);
@@ -75,6 +78,7 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
         : undefined;
       let lastError = AI_REQUEST_ERROR;
 
+      // 请求失败或 AI 落子无效时重试，直到达到上限
       for (let attempt = 0; attempt <= AI_MAX_RETRIES; attempt++) {
         if (requestId !== aiRequestId) {
           return false;
@@ -156,6 +160,7 @@ export function useGoGame(boardRef: Ref<GoBoardInstance | null>) {
   async function handlePass() {
     if (boardRef.value?.play()) {
       await nextTick();
+      // 停一手后轮到白方时触发 AI 落子
       if (currentPlayer.value === -1) {
         handleRetryAI();
       }

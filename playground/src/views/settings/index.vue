@@ -28,37 +28,37 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
 </script>
 
 <template>
-  <div class="settings-view">
+  <div class="settings-view p-[18px_24px_42px]">
     <section class="settings-shell" aria-labelledby="settings-title">
       <div class="flex justify-between align-center">
         <h1 class="text-2xl font-bold">
           管理你的 AI 对手
         </h1>
-        <button class="primary-button" type="button" @click="openProviderCreate">
+        <button class="primary-button hover:!bg-[var(--sage-dark)] hover:translate-y-[-1px]" type="button" @click="openProviderCreate">
           <span aria-hidden="true">＋</span> 新增产商
         </button>
       </div>
 
-      <div class="settings-overview" aria-label="AI 配置概览">
+      <div class="settings-overview grid grid-cols-[repeat(3,1fr)] gap-[10px] mb-[30px]" aria-label="AI 配置概览">
         <div class="overview-card">
-          <span>已连接产商</span>
+          <span class="text-[var(--overview-label)] text-[11px] font-[650]">已连接产商</span>
           <strong>{{ activeProviderCount }}</strong>
         </div>
         <div class="overview-card">
-          <span>可用模型</span>
+          <span class="text-[var(--overview-label)] text-[11px] font-[650]">可用模型</span>
           <strong>{{ modelCount }}</strong>
         </div>
-        <div class="overview-card accent">
-          <span>当前默认</span>
+        <div class="overview-card accent !bg-[var(--sage)] ![--overview-label:rgb(255_253_248_/_70%)] ![--overview-value:#fffdf8] text-[#fffdf8]">
+          <span class="text-[var(--overview-label)] text-[11px] font-[650]">当前默认</span>
           <strong>{{ defaultModel }}</strong>
         </div>
       </div>
 
-      <div v-if="loading" class="loading-state">
+      <div v-if="loading" class="loading-state gap-[8px] min-h-[180px]">
         <span class="loading-spinner" />正在读取配置...
       </div>
-      <div v-else class="provider-list">
-        <div v-for="provider in providers" :key="provider.id" class="provider-group">
+      <div v-else class="provider-list flex flex-col gap-[22px]">
+        <div v-for="provider in providers" :key="provider.id" class="provider-group p-[20px] [background:rgb(246_243_234_/_62%)] [border:1px_solid_rgb(213_211_198_/_72%)] rounded-[18px]">
           <ProviderCard
             :provider="provider"
             :deleting="deletingId === provider.id"
@@ -69,7 +69,7 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
         </div>
         <div v-if="providers.length === 0" class="empty-state">
           <span class="empty-icon" aria-hidden="true">✦</span>
-          <strong class="empty-title">还没有 AI 产商</strong>
+          <strong class="empty-title text-[15px] text-[var(--ink)]">还没有 AI 产商</strong>
           <p>添加一个兼容 OpenAI API 的产商，开始你的第一盘对弈。</p>
         </div>
       </div>
@@ -80,10 +80,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
 </template>
 
 <style scoped>
-.settings-view {
-  padding: 18px 24px 42px;
-}
-
 .settings-shell {
   width: 1040px;
   padding: 44px 52px 52px;
@@ -114,18 +110,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
     transform 160ms ease;
 }
 
-.primary-button:hover {
-  background: var(--sage-dark);
-  transform: translateY(-1px);
-}
-
-.settings-overview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
 .overview-card {
   --overview-label: var(--soft-muted);
   --overview-value: var(--ink);
@@ -138,24 +122,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
   border-radius: 14px;
 }
 
-.overview-card.accent {
-  --overview-label: rgb(255 253 248 / 70%);
-  --overview-value: #fffdf8;
-
-  color: #fffdf8;
-  background: var(--sage);
-}
-
-.overview-card span,
-.overview-card small {
-  color: var(--overview-label);
-}
-
-.overview-card span {
-  font-size: 11px;
-  font-weight: 650;
-}
-
 .overview-card strong {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,10 +130,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
   color: var(--overview-value);
   letter-spacing: -0.04em;
   white-space: nowrap;
-}
-
-.overview-card small {
-  font-size: 10px;
 }
 
 .loading-state,
@@ -179,11 +141,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
   color: var(--soft-muted);
 }
 
-.loading-state {
-  gap: 8px;
-  min-height: 180px;
-}
-
 .loading-spinner {
   width: 11px;
   height: 11px;
@@ -191,19 +148,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
   border-top-color: var(--sage);
   border-radius: 50%;
   animation: spin 700ms linear infinite;
-}
-
-.provider-list {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.provider-group {
-  padding: 20px;
-  background: rgb(246 243 234 / 62%);
-  border: 1px solid rgb(213 211 198 / 72%);
-  border-radius: 18px;
 }
 
 .empty-state {
@@ -225,11 +169,6 @@ function openProviderEdit(provider: Api.Ai.ProviderResponse) {
   color: var(--sage);
   background: var(--sage-soft);
   border-radius: 12px;
-}
-
-.empty-title {
-  font-size: 15px;
-  color: var(--ink);
 }
 
 .empty-state p {

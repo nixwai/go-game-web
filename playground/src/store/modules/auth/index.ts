@@ -7,6 +7,7 @@ import { fetchCurrentUser, fetchLogin, fetchRegister } from '@/service/api';
 import { localStg } from '@/utils/storage';
 import { clearAuthStorage, getToken } from './shared';
 
+/** 用户认证与登录信息状态。 */
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const { toLogin, redirectFromLogin } = useRouterPush(false);
   const { encrypt } = useRSA();

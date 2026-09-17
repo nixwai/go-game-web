@@ -3,8 +3,11 @@ import { ref } from 'vue';
 import { useModelDelete } from '../hooks/use-model-delete';
 import ModelDialog from './model-dialog.vue';
 
+/** 模型列表组件的属性。 */
 interface Props {
+  /** 所属 AI 产商。 */
   provider: Api.Ai.ProviderResponse
+  /** 重新加载产商数据。 */
   getTableData: () => Promise<void>
 }
 
@@ -23,31 +26,31 @@ function handleEdit(model: Api.Ai.ModelResponse) {
 </script>
 
 <template>
-  <div class="model-list">
+  <div class="model-list pt-[18px] m-[20px_0_0_42px] [border-top:1px_solid_rgb(65_104_78_/_12%)]">
     <div class="model-list-header">
-      <div>
-        <strong>模型列表 <small>({{ provider.models.length }})</small></strong>
+      <div class="flex flex-col gap-[4px]">
+        <strong class="text-[13px] font-[750] text-[var(--ink)]">模型列表 <small class="font-[650] text-[var(--soft-muted)]">({{ provider.models.length }})</small></strong>
       </div>
-      <button v-if="!provider.is_default" type="button" @click="handleOpenCreate">
+      <button v-if="!provider.is_default" class="hover:!text-[#fff] hover:!bg-[var(--sage)]" type="button" @click="handleOpenCreate">
         <span aria-hidden="true">＋</span>新增模型
       </button>
     </div>
-    <div v-if="provider.models.length" class="models">
+    <div v-if="provider.models.length" class="models flex flex-col gap-[6px]">
       <div v-for="model in provider.models" :key="model.id" class="model-row">
         <div class="model-name">
-          <span class="model-bullet" aria-hidden="true" />
+          <span class="model-bullet w-[6px] h-[6px] bg-[var(--sage)] rounded-[50%]" aria-hidden="true" />
           <span>{{ model.model_name }}</span>
-          <span class="state-tag" :class="{ disabled: model.status !== 'active' }">
-            <i />{{ model.status === 'active' ? '启用' : '禁用' }}
+          <span class="state-tag" :class="model.status !== 'active' ? 'disabled text-[var(--soft-muted)] bg-[var(--paper-deep)]' : 'text-[var(--sage-dark)] bg-[var(--sage-soft)]'">
+            <i class="w-[5px] h-[5px] rounded-[50%]" :class="model.status === 'active' ? 'bg-[#589066]' : 'bg-[#b5b9ae]'" />{{ model.status === 'active' ? '启用' : '禁用' }}
           </span>
-          <span v-if="model.is_default" class="default-tag">默认</span>
+          <span v-if="model.is_default" class="default-tag text-[#8d6b2c] bg-[#f5eacd]">默认</span>
         </div>
-        <div v-if="!model.is_default" class="model-actions">
-          <button type="button" @click="handleEdit(model)">
+        <div v-if="!model.is_default" class="model-actions flex gap-[6px]">
+          <button class="hover:!bg-[var(--sage-soft)]" type="button" @click="handleEdit(model)">
             编辑
           </button>
           <button
-            class="delete-button"
+            class="delete-button !text-[var(--danger)] hover:!bg-[#f4e4df] disabled:!cursor-not-allowed disabled:!opacity-[0.45]"
             type="button"
             :disabled="deletingId === model.id"
             @click="handleDelete(model.id)"
@@ -57,7 +60,7 @@ function handleEdit(model: Api.Ai.ModelResponse) {
         </div>
       </div>
     </div>
-    <p v-else class="model-empty">
+    <p v-else class="model-empty m-0 text-[11px] text-[var(--soft-muted)]">
       这个产商还没有添加模型。
     </p>
     <ModelDialog ref="modelDialogRef" @success="props.getTableData" />
@@ -65,35 +68,12 @@ function handleEdit(model: Api.Ai.ModelResponse) {
 </template>
 
 <style scoped>
-.model-list {
-  padding-top: 18px;
-  margin: 20px 0 0 42px;
-  border-top: 1px solid rgb(65 104 78 / 12%);
-}
-
 .model-list-header {
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-}
-
-.model-list-header > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.model-list-header strong {
-  font-size: 13px;
-  font-weight: 750;
-  color: var(--ink);
-}
-
-.model-list-header strong small {
-  font-weight: 650;
-  color: var(--soft-muted);
 }
 
 .model-list-header button {
@@ -119,21 +99,6 @@ function handleEdit(model: Api.Ai.ModelResponse) {
   border-radius: 6px;
 }
 
-.model-actions button:hover {
-  background: var(--sage-soft);
-}
-
-.model-list-header button:hover {
-  color: #fff;
-  background: var(--sage);
-}
-
-.models {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
 .model-row {
   display: flex;
   gap: 12px;
@@ -154,13 +119,6 @@ function handleEdit(model: Api.Ai.ModelResponse) {
   color: var(--ink);
 }
 
-.model-bullet {
-  width: 6px;
-  height: 6px;
-  background: var(--sage);
-  border-radius: 50%;
-}
-
 .state-tag,
 .default-tag {
   display: inline-flex;
@@ -171,55 +129,5 @@ function handleEdit(model: Api.Ai.ModelResponse) {
   font-size: 9px;
   font-weight: 700;
   border-radius: 99px;
-}
-
-.state-tag {
-  color: var(--sage-dark);
-  background: var(--sage-soft);
-}
-
-.state-tag i {
-  width: 5px;
-  height: 5px;
-  background: #589066;
-  border-radius: 50%;
-}
-
-.state-tag.disabled {
-  color: var(--soft-muted);
-  background: var(--paper-deep);
-}
-
-.state-tag.disabled i {
-  background: #b5b9ae;
-}
-
-.default-tag {
-  color: #8d6b2c;
-  background: #f5eacd;
-}
-
-.model-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.model-actions .delete-button {
-  color: var(--danger);
-}
-
-.model-actions .delete-button:hover {
-  background: #f4e4df;
-}
-
-.model-actions button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-.model-empty {
-  margin: 0;
-  font-size: 11px;
-  color: var(--soft-muted);
 }
 </style>
