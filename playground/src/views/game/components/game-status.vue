@@ -23,92 +23,37 @@ const playerIsBlack = computed(() => props.currentPlayer === 1);
 </script>
 
 <template>
-  <div class="game-status flex flex-col gap-[9px]">
-    <div class="turn-card">
-      <div class="turn-stone" :class="{ 'white': !playerIsBlack, '!bg-[radial-gradient(circle_at_35%_30%,#fff,#d8d8d0_70%)]': !playerIsBlack, '[border:1px_solid_#c2c4bc]': !playerIsBlack }" aria-hidden="true" />
-      <div class="turn-copy flex flex-1 flex-col gap-[2px]">
-        <span class="text-[10px] font-[650] text-[var(--soft-muted)]">当前执棋</span>
-        <strong class="text-[14px] font-[780] text-[var(--ink)]">{{ playerText }}</strong>
+  <div class="game-status flex flex-col gap-2.25">
+    <div class="flex gap-2.5 items-center p-3 bg-mc-paper-50 border border-mc-neutral-200/80 rounded-xl">
+      <div class="turn-stone w-7.25 h-7.25 bg-mc-stone-950 border border-mc-stone-950 rounded-full shadow-[1px_2px_4px] shadow-mc-stone-950/23" :class="{ '!bg-mc-paper-0 !border-mc-stone-200': !playerIsBlack }" aria-hidden="true" />
+      <div class="turn-copy flex flex-1 flex-col gap-0.5">
+        <span class="text-xs font-[650] text-mc-neutral-380">当前执棋</span>
+        <strong class="text-lg font-[780] text-mc-ink-950">{{ playerText }}</strong>
       </div>
-      <span class="turn-arrow text-[17px] font-[700] text-[var(--sage)]" aria-hidden="true">↗</span>
+      <span class="text-2xl font-[700] text-mc-sage-600" aria-hidden="true">↗</span>
     </div>
-    <div class="status-grid grid grid-cols-[1fr] gap-[9px]">
-      <div class="mini-stat">
-        <span class="text-[10px] font-[650] text-[var(--soft-muted)]">手数</span>
-        <strong class="text-[14px] font-[780] text-[var(--ink)]">{{ props.moveCount }}</strong>
+    <div class="status-grid grid grid-cols-[1fr] gap-2.25">
+      <div class="flex items-center justify-between p-2.5 bg-mc-paper-50/58 rounded-lg">
+        <span class="text-xs font-[650] text-mc-neutral-380">手数</span>
+        <strong class="text-lg font-[780] text-mc-ink-950">{{ props.moveCount }}</strong>
       </div>
     </div>
     <div
-      class="status-message"
+      class="status-message flex gap-1.75 items-center px-2.5 py-2.25 text-sm font-[700] text-mc-sage-680 bg-mc-sage-100 rounded-md"
       :class="{
-        'thinking': props.isAIThinking && !props.aiError,
-        'ai-error': Boolean(props.aiError),
-        '!items-start !text-[var(--danger)] !bg-[#f4e4df]': Boolean(props.aiError),
-        '!text-[#8d6b2c] !bg-[#f5eacd]': props.isAIThinking && !props.aiError,
+        '!items-start !text-mc-danger-600 !bg-mc-danger-150': Boolean(props.aiError),
+        '!text-mc-ochre-650 !bg-mc-ochre-100': props.isAIThinking && !props.aiError,
       }"
       :role="props.aiError ? 'alert' : undefined"
       :aria-live="props.aiError ? 'assertive' : undefined"
     >
-      <i class="w-[6px] h-[6px] bg-[#589066] rounded-[50%]" :class="{ 'flex-none mt-[4px] !bg-[var(--danger)]': Boolean(props.aiError), '!bg-[#c49437]': props.isAIThinking && !props.aiError }" />
+      <i class="w-1.5 h-1.5 bg-mc-sage-450 rounded-full" :class="{ 'flex-none mt-1 !bg-mc-danger-600': Boolean(props.aiError), '!bg-mc-ochre-450': props.isAIThinking && !props.aiError }" />
       <span class="status-copy flex-1">
         {{ props.aiError || (props.isAIThinking ? 'AI 正在思考下一步' : '对弈中') }}
       </span>
-      <button v-if="props.aiError" class="retry-button hover:!text-[#fff] hover:!bg-[var(--danger)]" type="button" @click="$emit('retry')">
+      <button v-if="props.aiError" class="flex-none px-1.5 py-0.5 text-xs font-[750] text-mc-danger-600 cursor-pointer bg-mc-transparent border border-mc-danger-600 rounded-xs hover:text-mc-paper-0 hover:bg-mc-danger-600" type="button" @click="$emit('retry')">
         重试
       </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.turn-card {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  background: var(--paper);
-  border: 1px solid rgb(213 211 198 / 70%);
-  border-radius: 13px;
-}
-
-.turn-stone {
-  width: 29px;
-  height: 29px;
-  background: radial-gradient(circle at 35% 30%, #5d625b, #121411 70%);
-  border-radius: 50%;
-  box-shadow: 1px 2px 4px rgb(0 0 0 / 23%);
-}
-
-.mini-stat {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  background: rgb(255 253 248 / 58%);
-  border-radius: 10px;
-}
-
-.status-message {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  padding: 9px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--sage-dark);
-  background: var(--sage-soft);
-  border-radius: 9px;
-}
-
-.retry-button {
-  flex: 0 0 auto;
-  padding: 2px 6px;
-  font-size: 10px;
-  font-weight: 750;
-  color: var(--danger);
-  cursor: pointer;
-  background: transparent;
-  border: 1px solid currentcolor;
-  border-radius: 6px;
-}
-</style>

@@ -20,95 +20,34 @@ interface Emits {
 </script>
 
 <template>
-  <div class="provider-card flex gap-[18px] items-start justify-between">
-    <div class="provider-main flex-1">
-      <div class="provider-title-row flex gap-[11px] items-start">
-        <span class="provider-icon" aria-hidden="true">✦</span>
+  <div class="flex gap-4.5 items-start justify-between">
+    <div class="flex-1">
+      <div class="flex gap-2.75 items-start">
+        <span class="grid flex-none place-items-center w-7.75 h-7.75 text-lg text-mc-sage-600 bg-mc-sage-100 rounded-lg" aria-hidden="true">✦</span>
         <div>
-          <div class="provider-name-row flex gap-[7px] items-center">
-            <h3>{{ provider.provider_name }}</h3>
-            <span class="state-tag" :class="provider.status !== 'active' ? 'disabled text-[var(--soft-muted)] bg-[var(--paper-deep)]' : 'text-[var(--sage-dark)] bg-[var(--sage-soft)]'">
-              <i class="w-[5px] h-[5px] rounded-[50%]" :class="provider.status === 'active' ? 'bg-[#589066]' : 'bg-[#b5b9ae]'" />{{ provider.status === 'active' ? '启用' : '禁用' }}
+          <div class="flex gap-1.75 items-center">
+            <h3 class="m-0 text-2xl font-[780] text-mc-ink-950 tracking-[-0.03em]">
+              {{ provider.provider_name }}
+            </h3>
+            <span class="inline-flex gap-1 items-center min-h-5 px-1.75 text-xs font-[700] rounded-pill" :class="provider.status !== 'active' ? 'text-mc-neutral-380 bg-mc-paper-125' : 'text-mc-sage-680 bg-mc-sage-100'">
+              <i class="w-[5px] h-[5px] rounded-full" :class="provider.status === 'active' ? 'bg-mc-sage-450' : 'bg-mc-neutral-300'" />{{ provider.status === 'active' ? '启用' : '禁用' }}
             </span>
-            <span v-if="provider.is_default" class="default-tag text-[#8d6b2c] bg-[#f5eacd]">默认</span>
+            <span v-if="provider.is_default" class="inline-flex gap-1 items-center min-h-5 px-1.75 text-xs font-[700] text-mc-ochre-650 bg-mc-ochre-100 rounded-pill">默认</span>
           </div>
         </div>
       </div>
-      <div class="provider-details">
-        <span><b class="text-[9px] font-[800] text-[var(--soft-muted)] tracking-[0.08em]">BASE URL</b>{{ provider.base_url }}</span>
-        <span><b class="text-[9px] font-[800] text-[var(--soft-muted)] tracking-[0.08em]">API KEY</b>{{ provider.has_api_key ? '已配置' : '未配置' }}</span>
+      <div class="flex gap-4.5 mt-4 ml-10.5 text-sm text-mc-neutral-500">
+        <span class="flex gap-1.5 items-center overflow-hidden text-ellipsis whitespace-nowrap"><b class="text-2xs font-[800] text-mc-neutral-380 tracking-[0.08em]">BASE URL</b>{{ provider.base_url }}</span>
+        <span class="flex gap-1.5 items-center overflow-hidden text-ellipsis whitespace-nowrap"><b class="text-2xs font-[800] text-mc-neutral-380 tracking-[0.08em]">API KEY</b>{{ provider.has_api_key ? '已配置' : '未配置' }}</span>
       </div>
     </div>
-    <div v-if="!provider.is_default" class="provider-actions flex gap-[6px]">
-      <button class="hover:!text-[#fff] hover:!bg-[var(--sage)]" type="button" @click="emit('edit')">
+    <div v-if="!provider.is_default" class="flex gap-1.5">
+      <button class="min-h-7.25 px-2.25 text-sm font-[700] text-mc-sage-680 cursor-pointer bg-mc-paper-50 border border-mc-sage-600/16 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-sage-600" type="button" @click="emit('edit')">
         编辑
       </button>
-      <button class="delete-button !text-[var(--danger)] !border-[rgb(169_88_77_/_18%)] hover:!text-[#fff] hover:!bg-[var(--danger)] disabled:!cursor-not-allowed disabled:!opacity-[0.45]" type="button" :disabled="deleting" @click="emit('delete')">
+      <button class="min-h-7.25 px-2.25 text-sm font-[700] !text-mc-danger-600 cursor-pointer bg-mc-paper-50 border border-mc-danger-600/18 rounded-sm hover:!text-mc-paper-0 hover:!bg-mc-danger-600 disabled:!cursor-not-allowed disabled:!opacity-[0.45]" type="button" :disabled="deleting" @click="emit('delete')">
         {{ deleting ? '删除中...' : '删除' }}
       </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.provider-icon {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 31px;
-  height: 31px;
-  font-size: 14px;
-  color: var(--sage);
-  background: var(--sage-soft);
-  border-radius: 10px;
-}
-
-h3 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 780;
-  color: var(--ink);
-  letter-spacing: -0.03em;
-}
-
-.state-tag,
-.default-tag {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  min-height: 20px;
-  padding: 0 7px;
-  font-size: 10px;
-  font-weight: 700;
-  border-radius: 99px;
-}
-
-.provider-details {
-  display: flex;
-  gap: 18px;
-  margin: 16px 0 0 42px;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.provider-details span {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.provider-actions button {
-  min-height: 29px;
-  padding: 0 9px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--sage-dark);
-  cursor: pointer;
-  background: var(--paper);
-  border: 1px solid rgb(65 104 78 / 16%);
-  border-radius: 8px;
-}
-</style>

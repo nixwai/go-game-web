@@ -6,30 +6,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="action-grid grid grid-cols-[1fr] gap-[8px] pt-[3px]">
-    <button class="action-button primary text-[#fffdf8] bg-[var(--sage)] shadow-[0_7px_14px_rgb(65_104_78_/_18%)] hover:bg-[var(--sage-dark)]" type="button" @click="emit('newGame')">
+  <div class="action-grid grid grid-cols-[1fr] gap-2 pt-0.75">
+    <button class="min-h-9.5 px-2.25 text-base font-[750] text-mc-paper-50 cursor-pointer bg-mc-sage-600 border-0 rounded-xl shadow-float transition-all hover:bg-mc-sage-680 active:translate-y-px" type="button" @click="emit('newGame')">
       <span aria-hidden="true">＋</span> 新局
     </button>
   </div>
 </template>
-
-<style scoped>
-.action-button {
-  min-height: 38px;
-  padding: 0 9px;
-  font-size: 12px;
-  font-weight: 750;
-  cursor: pointer;
-  border: 0;
-  border-radius: 11px;
-  transition:
-    color 160ms ease,
-    background 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.action-button:active {
-  transform: translateY(1px);
-}
-</style>

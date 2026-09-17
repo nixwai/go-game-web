@@ -51,110 +51,35 @@ async function onModelChange(event: Event) {
 </script>
 
 <template>
-  <div class="model-selector flex flex-col gap-[12px]">
-    <div class="ai-row flex gap-[8px] items-center justify-between">
-      <div class="ai-identity flex gap-[9px] items-center">
-        <span class="ai-avatar" aria-hidden="true">✦</span>
-        <div class="flex flex-col gap-[2px]">
-          <strong class="text-[13px] font-[750] text-[var(--ink)]">智能对手</strong>
-          <small class="text-[10px] text-[var(--soft-muted)]">{{ aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
+  <div class="model-selector flex flex-col gap-3">
+    <div class="ai-row flex gap-2 items-center justify-between">
+      <div class="ai-identity flex gap-2.25 items-center">
+        <span class="grid place-items-center w-7.25 h-7.25 text-lg text-mc-sage-600 bg-mc-sage-100 rounded-md" aria-hidden="true">✦</span>
+        <div class="flex flex-col gap-0.5">
+          <strong class="text-md font-[750] text-mc-ink-950">智能对手</strong>
+          <small class="text-xs text-mc-neutral-380">{{ aiEnabled ? '自动响应你的落子' : '双方手动落子' }}</small>
         </div>
       </div>
       <button
-        class="ai-toggle"
-        :class="{ 'enabled': aiEnabled, '!text-[var(--sage-dark)] !bg-[var(--sage-soft)] !border-transparent': aiEnabled }"
+        class="ai-toggle inline-flex gap-1.25 items-center min-h-7.25 px-2 text-xs font-[750] cursor-pointer border rounded-sm"
+        :class="aiEnabled ? '!text-mc-sage-680 !bg-mc-sage-100 !border-mc-transparent' : 'text-mc-neutral-380 bg-mc-paper-50 border-mc-sage-600/16'"
         type="button"
         :aria-pressed="aiEnabled"
         @click="emit('toggleAI')"
       >
-        <span class="w-[6px] h-[6px] rounded-[50%]" :class="aiEnabled ? 'bg-[#589066]' : 'bg-[#b5b9ae]'" />{{ aiEnabled ? '开启' : '关闭' }}
+        <span class="w-1.5 h-1.5 rounded-full" :class="aiEnabled ? 'bg-mc-sage-450' : 'bg-mc-neutral-300'" />{{ aiEnabled ? '开启' : '关闭' }}
       </button>
     </div>
-    <label v-if="aiEnabled" class="model-field">
+    <label v-if="aiEnabled" class="model-field flex flex-col gap-1.25 text-xs font-[650] text-mc-neutral-380">
       <span>使用模型</span>
-      <select class="focus:!border-[var(--sage)] focus:!shadow-[0_0_0_3px_rgb(65_104_78_/_10%)]" :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
+      <select class="w-full min-h-8.75 px-2.25 text-sm font-[650] text-mc-ink-950 outline-none bg-mc-paper-50 border border-mc-sage-600/18 rounded-md focus:border-mc-sage-600 focus:shadow-focus" :value="selectedModelId" aria-label="选择 AI 模型" @change="onModelChange">
         <option v-for="opt in modelOptions" :key="opt.value" :value="opt.value">
           {{ opt.label }}
         </option>
       </select>
     </label>
-    <p v-if="isAIThinking" class="thinking-label">
-      <span class="thinking-spinner" />AI 正在分析局面...
+    <p v-if="isAIThinking" class="thinking-label flex gap-1.5 items-center m-0 text-xs font-[700] text-mc-ochre-550">
+      <span class="thinking-spinner w-2.25 h-2.25 border-2 border-mc-ochre-450/25 border-t-mc-ochre-600 rounded-full animate-spin" />AI 正在分析局面...
     </p>
   </div>
 </template>
-
-<style scoped>
-.ai-avatar {
-  display: grid;
-  place-items: center;
-  width: 29px;
-  height: 29px;
-  font-size: 14px;
-  color: var(--sage);
-  background: var(--sage-soft);
-  border-radius: 9px;
-}
-
-.ai-toggle {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  min-height: 29px;
-  padding: 0 8px;
-  font-size: 10px;
-  font-weight: 750;
-  color: var(--soft-muted);
-  cursor: pointer;
-  background: var(--paper);
-  border: 1px solid rgb(65 104 78 / 16%);
-  border-radius: 8px;
-}
-
-.model-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--soft-muted);
-}
-
-.model-field select {
-  width: 100%;
-  min-height: 35px;
-  padding: 0 9px;
-  font-size: 11px;
-  font-weight: 650;
-  color: var(--ink);
-  outline: none;
-  background: var(--paper);
-  border: 1px solid rgb(65 104 78 / 18%);
-  border-radius: 9px;
-}
-
-.thinking-label {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin: 0;
-  font-size: 10px;
-  font-weight: 700;
-  color: #9a742c;
-}
-
-.thinking-spinner {
-  width: 9px;
-  height: 9px;
-  border: 2px solid rgb(196 148 55 / 25%);
-  border-top-color: #c49437;
-  border-radius: 50%;
-  animation: spin 700ms linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>

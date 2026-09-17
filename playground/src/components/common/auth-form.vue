@@ -39,152 +39,49 @@ function handleReset() {
 </script>
 
 <template>
-  <div class="auth-form">
-    <div class="auth-brand-mark" aria-hidden="true">
-      <i /><i /><i class="col-[1/span_2] justify-self-center" />
+  <div class="w-form p-8.5 bg-mc-paper-50/92 border border-mc-paper-0/78 rounded-5xl shadow-card">
+    <div class="grid grid-cols-[repeat(2,6px)] gap-0.75 place-content-center w-8.5 h-8.5 mb-5 bg-mc-sage-600 rounded-[11px] rotate-[-8deg]" aria-hidden="true">
+      <i class="block w-1.5 h-1.5 bg-mc-ivory-50 rounded-full" />
+      <i class="block w-1.5 h-1.5 bg-mc-ivory-50 rounded-full" />
+      <i class="block w-1.5 h-1.5 col-[1/span_2] justify-self-center bg-mc-ivory-50 rounded-full" />
     </div>
-    <p class="auth-eyebrow">
+    <p class="m-0 mb-2 text-xs font-[800] text-mc-sage-600 tracking-[0.15em]">
       AI GO / QUIET FOCUS
     </p>
-    <h1>{{ title }}</h1>
-    <form class="auth-fields flex flex-col gap-[15px]" @submit.prevent="handleSubmit">
-      <label class="auth-field">
+    <h1 class="m-0 text-5xl font-[780] text-mc-ink-950 tracking-[-0.06em]">
+      {{ title }}
+    </h1>
+    <form class="flex flex-col gap-3.75" @submit.prevent="handleSubmit">
+      <label class="flex flex-col gap-1.5 text-sm font-[750] text-mc-ink-950">
         <span>用户名</span>
         <input
           v-model="model.username"
+          class="w-full min-h-10.25 px-3 text-base text-mc-ink-950 outline-none bg-mc-paper-0 border border-mc-sage-600/18 rounded-lg placeholder:text-mc-neutral-380 focus:border-mc-sage-600 focus:shadow-focus"
           type="text"
           required
           placeholder="3-64 位，字母数字下划线"
           autocomplete="username"
         >
       </label>
-      <label class="auth-field">
+      <label class="flex flex-col gap-1.5 text-sm font-[750] text-mc-ink-950">
         <span>密码</span>
         <input
           v-model="model.password"
+          class="w-full min-h-10.25 px-3 text-base text-mc-ink-950 outline-none bg-mc-paper-0 border border-mc-sage-600/18 rounded-lg placeholder:text-mc-neutral-380 focus:border-mc-sage-600 focus:shadow-focus"
           type="password"
           required
           placeholder="8-128 位，字母 + 数字"
           :autocomplete="isLogin ? 'current-password' : 'new-password'"
         >
       </label>
-      <div class="auth-actions flex gap-[8px] mt-[7px]">
-        <button class="submit-button" type="submit" :disabled="props.loading">
+      <div class="flex gap-2 mt-1.75">
+        <button class="inline-flex flex-1 items-center justify-between min-h-10 px-3.75 text-base font-[750] text-mc-paper-50 cursor-pointer bg-mc-sage-600 border-0 rounded-lg shadow-float hover:bg-mc-sage-680 disabled:cursor-not-allowed disabled:opacity-50" type="submit" :disabled="props.loading">
           {{ props.loading ? '处理中...' : buttonText }} <span aria-hidden="true">→</span>
         </button>
-        <button class="reset-button text-[var(--muted)] bg-[var(--paper-deep)] hover:text-[var(--ink)]" type="button" @click="handleReset">
+        <button class="min-h-10 px-3.5 text-base font-[750] text-mc-neutral-500 cursor-pointer bg-mc-paper-125 border-0 rounded-lg hover:text-mc-ink-950" type="button" @click="handleReset">
           重置
         </button>
       </div>
     </form>
   </div>
 </template>
-
-<style scoped>
-.auth-form {
-  width: 390px;
-  padding: 34px;
-  background: rgb(255 253 248 / 92%);
-  border: 1px solid rgb(255 255 255 / 78%);
-  border-radius: 22px;
-  box-shadow: 0 22px 55px rgb(92 91 69 / 13%);
-}
-
-.auth-brand-mark {
-  display: grid;
-  grid-template-columns: repeat(2, 6px);
-  gap: 3px;
-  place-content: center center;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 20px;
-  background: var(--sage);
-  border-radius: 11px;
-  transform: rotate(-8deg);
-}
-
-.auth-brand-mark i {
-  display: block;
-  width: 6px;
-  height: 6px;
-  background: #f9f4e8;
-  border-radius: 50%;
-}
-
-.auth-eyebrow {
-  margin: 0 0 8px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--sage);
-  letter-spacing: 0.15em;
-}
-
-h1 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 780;
-  color: var(--ink);
-  letter-spacing: -0.06em;
-}
-
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 750;
-  color: var(--ink);
-}
-
-.auth-field input {
-  width: 100%;
-  min-height: 41px;
-  padding: 0 12px;
-  font-size: 12px;
-  color: var(--ink);
-  outline: none;
-  background: #fff;
-  border: 1px solid rgb(65 104 78 / 18%);
-  border-radius: 10px;
-}
-
-.auth-field input::placeholder {
-  color: #b0b4aa;
-}
-
-.auth-field input:focus {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgb(65 104 78 / 10%);
-}
-
-.submit-button,
-.reset-button {
-  min-height: 40px;
-  padding: 0 14px;
-  font-size: 12px;
-  font-weight: 750;
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-}
-
-.submit-button {
-  display: inline-flex;
-  flex: 1;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
-  color: #fffdf8;
-  background: var(--sage);
-  box-shadow: 0 7px 14px rgb(65 104 78 / 18%);
-}
-
-.submit-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: var(--sage-dark);
-}
-</style>

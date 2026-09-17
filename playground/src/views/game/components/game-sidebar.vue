@@ -1,81 +1,39 @@
-<script setup lang="ts">
-</script>
-
 <template>
-  <aside class="game-sidebar p-[22px] [background:rgb(246_243_234_/_82%)] [border:1px_solid_rgb(213_211_198_/_80%)] rounded-[20px]" aria-label="对局设置">
-    <div class="sidebar-header flex items-start justify-between mb-[22px]">
+  <aside class="game-sidebar p-5.5 bg-mc-paper-125/82 border border-mc-neutral-200/80 rounded-4xl" aria-label="对局设置">
+    <div class="sidebar-header flex items-start justify-between mb-5.5">
       <div>
-        <p class="panel-kicker">
+        <p class="m-0 mb-1.25 text-2xs font-[800] text-mc-sage-600 tracking-[0.16em]">
           MATCH CONTROL
         </p>
-        <h2>对局控制</h2>
+        <h2 class="m-0 text-4xl font-[780] text-mc-ink-950 tracking-[-0.04em]">
+          对局控制
+        </h2>
       </div>
-      <span class="control-icon" aria-hidden="true">✦</span>
+      <span class="grid place-items-center w-7.25 h-7.25 text-xl text-mc-sage-600 bg-mc-sage-100 rounded-md" aria-hidden="true">✦</span>
     </div>
 
-    <section class="control-section status-section">
-      <div class="section-title">
+    <section class="control-section">
+      <div class="flex gap-2.25 items-center mb-2.75 text-xs font-[750] text-mc-neutral-380 uppercase tracking-[0.1em]">
         <span>当前对局</span>
-        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
+        <span class="flex-1 h-px bg-mc-sage-600/13" />
       </div>
       <slot name="status" />
     </section>
 
-    <section class="control-section mt-[20px]">
-      <div class="section-title">
+    <section class="control-section mt-5">
+      <div class="flex gap-2.25 items-center mb-2.75 text-xs font-[750] text-mc-neutral-380 uppercase tracking-[0.1em]">
         <span>AI 对手</span>
-        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
+        <span class="flex-1 h-px bg-mc-sage-600/13" />
       </div>
       <slot name="ai" />
     </section>
 
-    <section class="control-section mt-[20px]">
-      <div class="section-title">
+    <section class="control-section mt-5">
+      <div class="flex gap-2.25 items-center mb-2.75 text-xs font-[750] text-mc-neutral-380 uppercase tracking-[0.1em]">
         <span>棋盘偏好</span>
-        <span class="section-line flex-1 h-[1px] bg-[rgb(65_104_78_/_13%)]" />
+        <span class="flex-1 h-px bg-mc-sage-600/13" />
       </div>
       <slot name="controls" />
     </section>
   </aside>
 </template>
-
-<style scoped>
-.panel-kicker {
-  margin: 0 0 5px;
-  font-size: 9px;
-  font-weight: 800;
-  color: var(--sage);
-  letter-spacing: 0.16em;
-}
-
-h2 {
-  margin: 0;
-  font-size: 21px;
-  font-weight: 780;
-  color: var(--ink);
-  letter-spacing: -0.04em;
-}
-
-.control-icon {
-  display: grid;
-  place-items: center;
-  width: 29px;
-  height: 29px;
-  font-size: 15px;
-  color: var(--sage);
-  background: var(--sage-soft);
-  border-radius: 9px;
-}
-
-.section-title {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-  margin-bottom: 11px;
-  font-size: 10px;
-  font-weight: 750;
-  color: var(--soft-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-</style>

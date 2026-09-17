@@ -1,52 +1,12 @@
 <template>
-  <div class="board-topline">
-    <div class="player-pair">
-      <span class="player-badge inline-flex gap-[6px] items-center"><i class="stone-dot black inline-block w-[11px] h-[11px] rounded-[50%] bg-[#1c1d1a] shadow-[1px_1px_2px_rgb(0_0_0_/_24%)]" />你 · 黑方</span>
-      <span class="versus text-[10px] font-[800] text-[var(--soft-muted)] tracking-[0.08em]">VS</span>
-      <span class="player-badge inline-flex gap-[6px] items-center"><i class="stone-dot white inline-block w-[11px] h-[11px] rounded-[50%] bg-[#fff] [border:1px_solid_#c8c8c0] shadow-[1px_1px_2px_rgb(0_0_0_/_12%)]" />AI · 白方</span>
+  <div class="flex gap-4 items-center justify-between w-board mx-auto mb-3.25">
+    <div class="flex gap-2.75 items-center text-base font-[650] text-mc-neutral-500">
+      <span class="inline-flex gap-1.5 items-center"><i class="inline-block w-2.75 h-2.75 rounded-full bg-mc-stone-950 shadow-[1px_1px_2px] shadow-mc-stone-950/24" />你 · 黑方</span>
+      <span class="text-xs font-[800] text-mc-neutral-380 tracking-[0.08em]">VS</span>
+      <span class="inline-flex gap-1.5 items-center"><i class="inline-block w-2.75 h-2.75 rounded-full bg-mc-paper-0 border border-mc-stone-200 shadow-[1px_1px_2px] shadow-mc-stone-950/12" />AI · 白方</span>
     </div>
-    <span class="status-pill">
-      <i />对弈进行中
+    <span class="inline-flex gap-1.75 items-center px-2.5 py-1.5 text-sm font-[750] text-mc-sage-680 bg-mc-sage-100 rounded-pill">
+      <i class="w-1.5 h-1.5 bg-mc-sage-450 rounded-full shadow-[0_0_0_3px] shadow-mc-sage-450/14" />对弈进行中
     </span>
   </div>
 </template>
-
-<style scoped>
-.board-topline {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  width: 620px;
-  margin: 0 auto 13px;
-}
-
-.player-pair {
-  display: flex;
-  gap: 11px;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 650;
-  color: var(--muted);
-}
-
-.status-pill {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 750;
-  color: var(--sage-dark);
-  background: var(--sage-soft);
-  border-radius: 99px;
-}
-
-.status-pill i {
-  width: 6px;
-  height: 6px;
-  background: #5c9b6c;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgb(92 155 108 / 14%);
-}
-</style>

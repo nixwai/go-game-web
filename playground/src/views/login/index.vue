@@ -8,27 +8,31 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
 </script>
 
 <template>
-  <div class="auth-page grid place-items-center min-h-[calc(100vh-76px)] p-[40px_24px]">
-    <div class="auth-layout">
-      <div class="auth-intro pb-[40px]">
-        <p class="intro-kicker">
+  <div class="auth-page grid place-items-center min-h-[calc(100vh-76px)] px-6 py-10">
+    <div class="auth-layout grid grid-cols-[370px_390px] gap-[90px] items-center w-layout">
+      <div class="pb-10">
+        <p class="m-0 mb-3.75 text-xs font-[800] text-mc-sage-600 tracking-[0.15em]">
           A DIFFERENT KIND OF PLAY
         </p>
-        <h2>一手一世界</h2>
-        <p>把每一次落子留给当下的判断</p>
-        <div class="intro-line">
-          <span class="w-[7px] h-[7px] bg-[var(--sage)] rounded-[50%]" />专注 · 平静 · 持续
+        <h2 class="m-0 text-6xl font-[780] leading-none text-mc-ink-950 tracking-[-0.08em]">
+          一手一世界
+        </h2>
+        <p class="max-w-62.5 mt-5 mb-6.25 text-lg leading-[1.8] text-mc-neutral-500">
+          把每一次落子留给当下的判断
+        </p>
+        <div class="inline-flex gap-2 items-center text-sm font-[700] text-mc-neutral-380">
+          <span class="w-1.75 h-1.75 bg-mc-sage-600 rounded-full" />专注 · 平静 · 持续
         </div>
       </div>
-      <div class="auth-column w-full">
-        <p v-if="errorMsg" class="error-message" role="alert">
+      <div class="w-full">
+        <p v-if="errorMsg" class="px-3 py-2.5 mb-2.5 text-base text-mc-danger-600 bg-mc-danger-150 rounded-md" role="alert">
           {{ errorMsg }}
         </p>
-        <div v-else class="h-48px" />
+        <div v-else class="h-12" />
         <AuthForm mode="login" :loading="loading" @submit="handleSubmit" />
-        <p class="auth-switch mt-[14px] text-[12px] text-[var(--muted)] text-center">
+        <p class="mt-3.5 text-base text-mc-neutral-500 text-center">
           还没有账号？
-          <button class="hover:underline" type="button" @click="toRegister">
+          <button class="p-0 text-mc-inherit font-[750] text-mc-sage-680 cursor-pointer bg-mc-transparent border-0 hover:underline" type="button" @click="toRegister">
             前往注册
           </button>
         </p>
@@ -36,66 +40,3 @@ const { loading, errorMsg, handleSubmit, toRegister } = useLogin();
     </div>
   </div>
 </template>
-
-<style scoped>
-.auth-layout {
-  display: grid;
-  grid-template-columns: 370px 390px;
-  gap: 90px;
-  align-items: center;
-  width: 820px;
-}
-
-.intro-kicker {
-  margin: 0 0 15px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--sage);
-  letter-spacing: 0.15em;
-}
-
-.auth-intro h2 {
-  margin: 0;
-  font-size: 66px;
-  font-weight: 780;
-  line-height: 1;
-  color: var(--ink);
-  letter-spacing: -0.08em;
-}
-
-.auth-intro > p:not(.intro-kicker) {
-  max-width: 250px;
-  margin: 20px 0 25px;
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--muted);
-}
-
-.intro-line {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--soft-muted);
-}
-
-.error-message {
-  padding: 10px 12px;
-  margin: 0 0 10px;
-  font-size: 12px;
-  color: var(--danger);
-  background: #f4e4df;
-  border-radius: 9px;
-}
-
-.auth-switch button {
-  padding: 0;
-  font-size: inherit;
-  font-weight: 750;
-  color: var(--sage-dark);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-}
-</style>

@@ -16,13 +16,13 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="preference-row flex gap-[12px] items-center justify-between">
-    <div class="flex flex-col gap-[3px]">
-      <span class="preference-label text-[13px] font-[700] text-[var(--ink)]">棋盘尺寸</span>
-      <small class="text-[10px] text-[var(--soft-muted)]">选择你的对弈规格</small>
+  <div class="preference-row flex gap-3 items-center justify-between">
+    <div class="flex flex-col gap-0.75">
+      <span class="preference-label text-md font-[700] text-mc-ink-950">棋盘尺寸</span>
+      <small class="text-xs text-mc-neutral-380">选择你的对弈规格</small>
     </div>
     <select
-      class="select-control"
+      class="max-w-25 min-h-8 px-2 text-base font-[700] text-mc-ink-950 cursor-pointer outline-none bg-mc-paper-50 border border-mc-sage-600/18 rounded-md focus:border-mc-sage-600 focus:shadow-focus disabled:cursor-not-allowed disabled:opacity-50"
       :value="props.boardSize"
       :disabled="props.disabled"
       aria-label="选择棋盘尺寸"
@@ -34,24 +34,3 @@ const emit = defineEmits<{
     </select>
   </div>
 </template>
-
-<style scoped>
-.select-control {
-  max-width: 100px;
-  min-height: 32px;
-  padding: 0 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-  outline: none;
-  background: var(--paper);
-  border: 1px solid rgb(65 104 78 / 18%);
-  border-radius: 9px;
-}
-
-.select-control:focus {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgb(65 104 78 / 10%);
-}
-</style>
